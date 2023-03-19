@@ -56,3 +56,7 @@ For mac:
 * Quickstart for flask: https://flask.palletsprojects.com/en/2.2.x/quickstart/  
 * Simple flask tutorial: https://flask.palletsprojects.com/en/2.2.x/tutorial/ 
 
+## Git and GiHub 
+
+* Good beginner tutorial and explanation: https://product.hubspot.com/blog/git-and-github-tutorial-for-beginners 
+
