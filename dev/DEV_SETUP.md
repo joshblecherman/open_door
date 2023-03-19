@@ -47,3 +47,10 @@ For mac:
     <pre>Initialized empty Git repository in /Users/joshblecherman/Desktop/projects/open_door/.git/</pre></li> 
     <li>I'll add more instructions later...</li>
 </ol>
+
+
+# Reading 
+
+* Quickstart for flask: https://flask.palletsprojects.com/en/2.2.x/quickstart/  
+* Simple flask tutorial: https://flask.palletsprojects.com/en/2.2.x/tutorial/ 
+
