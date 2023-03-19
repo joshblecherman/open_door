@@ -49,7 +49,7 @@ For mac:
 </ol>
 
 
-# Reading 
+# Links to Read
 
 * Quickstart for flask: https://flask.palletsprojects.com/en/2.2.x/quickstart/  
 * Simple flask tutorial: https://flask.palletsprojects.com/en/2.2.x/tutorial/ 
