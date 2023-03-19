@@ -51,6 +51,8 @@ For mac:
 
 # Links to Read
 
+## Flask
+
 * Quickstart for flask: https://flask.palletsprojects.com/en/2.2.x/quickstart/  
 * Simple flask tutorial: https://flask.palletsprojects.com/en/2.2.x/tutorial/ 
 
