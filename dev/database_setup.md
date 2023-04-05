@@ -8,6 +8,10 @@ I am using Windows 10 Home version 21H2 (OS build 19044.2486). I assume Mac/Linu
 
 3. Once the command prompt is open, paste the following code into the window:
 
+FOR MAC: 
+
+1. Save yourself a lot of time and go here https://postgresapp.com/downloads.html
+
 ```
 CREATE TABLE IF NOT EXISTS profiles (
    user_id              VARCHAR(10) PRIMARY KEY,
