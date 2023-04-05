@@ -12,15 +12,7 @@
 
 .home-text {
   color: #ffffff;
-  width: var(--dl-size-size-maxwidth);
-  font-size: xx-large;
-  /* align-self: center; */
-  /* text-align: center; */
   font-family: sans-serif;
-  font-weight: 700;
-  line-height: 1.15;
-  /* text-transform: none; */
-  /* text-decoration: none; */
 }
 
 .button-container {
@@ -53,4 +45,26 @@
 
 .home-button:hover{
   background-color: #6d0dbb;
+}
+
+.welcome-container{
+  background-color: #8b0ef3;
+
+  position: relative;
+  margin-top: 50px;
+  margin-left: 100px;
+  margin-right: 100px;
+  margin-bottom: 100px;
+  height: 600px;
+}
+
+.welcome-title{
+  color: #ffffff;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.welcome-message{
+  color: #ffffff;
+  font-family: sans-serif;
 }
