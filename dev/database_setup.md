@@ -27,12 +27,27 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS activities (
-   activity_id          INT PRIMARY KEY,
+   activity_id          UUID PRIMARY KEY,                 
    title                VARCHAR(50) NOT NULL,
+   place                VARCHAR(50) NOT NULL,
    description          VARCHAR(2000),
+   time                 TIME NOT NULL,
    fee                  INT NOT NULL,
+   url                  VARCHAR(255),
+   img                  BYTEA,
    reservation_needed   boolean NOT NULL,
    rsvp_list            VARCHAR(10)[]
+);
+
+CREATE TABLE IF NOT EXISTS student_events (
+   id                   UUID REFERENCES activities(activity_id),
+   notes                VARCHAR(2000)
+);
+
+CREATE TABLE IF NOT EXISTS ticketmaster_staging (
+   id                   INT PRIMARY KEY,
+   name                 VARCHAR(50) NOT NULL,
+   time                 TIME NOT NULL
 );
 ```
 
