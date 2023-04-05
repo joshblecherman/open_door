@@ -23,13 +23,26 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS activities (
-   activity_id          INT PRIMARY KEY,
+   id                   SERIAL PRIMARY KEY,
    title                VARCHAR(50) NOT NULL,
+   place                VARCHAR(50) NOT NULL,
    description          VARCHAR(2000),
+   time                 TIME NOT NULL,
    fee                  INT NOT NULL,
    reservation_needed   boolean NOT NULL,
    rsvp_list            VARCHAR(10)[]
 );
+
+CREATE TABLE IF NOT EXISTS student_events {
+   id                   INT REFERENCES activities(activity_id),
+   notes                TEXT
+}
+
+CREATE TABLE IF NOT EXISTS places {
+   id                   SERIAL PRIMARY KEY,
+   title                VARCHAR(50) NOT NULL,
+   description          VARCHAR(2000)
+}
 ```
 
 This will create the necessary tables.
