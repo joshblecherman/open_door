@@ -58,7 +58,7 @@ def test_db():
     populate_database(cur)
     
     fetch_statement = """
-    SELECT * FROM activities;
+    SELECT * FROM users;
     """
     cur.execute(fetch_statement)
     records = cur.fetchall()

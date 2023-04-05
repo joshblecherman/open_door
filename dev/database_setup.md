@@ -27,12 +27,33 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS activities (
-   activity_id          INT PRIMARY KEY,
+   activity_id          UUID PRIMARY KEY,                 
    title                VARCHAR(50) NOT NULL,
+   place                VARCHAR(50) NOT NULL,
    description          VARCHAR(2000),
+   datetime             TIMESTAMP NOT NULL,
    fee                  INT NOT NULL,
+   url                  VARCHAR(255),
+   img                  BYTEA,
    reservation_needed   boolean NOT NULL,
    rsvp_list            VARCHAR(10)[]
+);
+
+CREATE TABLE IF NOT EXISTS student_events (
+   id                   UUID REFERENCES activities(activity_id),
+   notes                VARCHAR(2000)
+);
+
+/*
+Every table below here will be empty in production.
+They are only used to feed data from APIs into our database.
+*/
+CREATE TABLE IF NOT EXISTS ticketmaster (
+   id                   INT PRIMARY KEY,
+   name                 VARCHAR(50) NOT NULL,
+   date                 DATE NOT NULL,
+   time                 TIME NOT NULL,
+   url                  VARCHAR(255) NOT NULL
 );
 ```
 
