@@ -13,6 +13,7 @@
 .home-text {
   color: #ffffff;
   font-family: sans-serif;
+  font-weight: 700;
 }
 
 .button-container {
@@ -31,7 +32,7 @@
   background-color: #8b0ef3;
   color: #ffffff;
   font-size: x-large;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1.15;
   text-transform: none;
   text-decoration: none;
