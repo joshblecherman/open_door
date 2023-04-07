@@ -6,14 +6,14 @@ from typing import *
 API_SECRET = "J0zAFpB9xDbb9o4Y"  # not sure if it is needed for anything, but here just in case
 API_KEY = "eKRil5sqCyPFlHFxHTB7ubR4avgMG1pI"
 
-PAGE_SIZE = 5  # max number of results we get back per page, must be < 200
+PAGE_SIZE = 50  # max number of results we get back per page, must be < 200
 
 CITY = "New York City"
-SORT = "relevance,asc"
+SORT = "date,asc"
 
 URL = "https://app.ticketmaster.com"
 API_URL = f"{URL}/discovery/v2"
-EVENTS_URL = f"{API_URL}/attractions.json?"
+EVENTS_URL = f"{API_URL}/events.json?"
 
 
 def _get_ticketmaster_events_url() -> str:
@@ -47,7 +47,7 @@ def _parse_ticketmaster_events(response_json: dict) -> List[dict]:
         page_events = page["_embedded"]["events"]
         for event in page_events:
             new_event = dict(
-                name=event["name"],
+                event_name=event["name"],
                 id=event["id"],
                 url=event["url"],
                 start_date=event["dates"]["start"]["localDate"],
