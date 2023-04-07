@@ -12,20 +12,12 @@
         {%block section%}{%endblock%}
       </h1>
     </div>
-    <div class="button-container">
-      <button type="button" class="home-button button">
-        Profile
-      </button>
-      <button type="button" class="home-button button">
-        Student Events
-      </button>
-      <button type="button" class="home-button button">
-        Fun Spots
-      </button>
-      <button type="button" class="home-button button">
-        Happening in NYC
-      </button>
-    </div>
+    <form class="button-container" action="#" method="post">
+      <input type="submit" class="home-button" name="my_profile" value="My Profile"/>
+      <input type="submit" class="home-button" name="student_events" value="Student Events"/>
+      <input type="submit" class="home-button" name="fun_spots" value="Fun Spots">
+      <input type="submit" class="home-button" name="happening_in_nyc" value="Happening in NYC"/>
+    </form>
     <div>{%block content%}{%endblock%}</div>
   </div>
 </body>
