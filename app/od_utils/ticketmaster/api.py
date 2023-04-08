@@ -1,7 +1,7 @@
-import requests
 import json
 import datetime
 from typing import *
+from app.od_utils.api_utils.api_utils import get_json
 
 API_SECRET = "J0zAFpB9xDbb9o4Y"  # not sure if it is needed for anything, but here just in case
 API_KEY = "eKRil5sqCyPFlHFxHTB7ubR4avgMG1pI"
@@ -32,7 +32,7 @@ def _get_response_pages(response_json: dict) -> Iterator[dict]:
     curr_resp_json = response_json
     while "next" in curr_resp_json["_links"]:
         next_url = URL + curr_resp_json["_links"]["next"]["href"] + f"&apikey={API_KEY}"
-        curr_resp_json = get_json(next_url)
+        curr_resp_json = get_json(next_url, 200)
         yield curr_resp_json
 
 
@@ -42,7 +42,7 @@ def _parse_ticketmaster_events(response_json: dict) -> List[dict]:
     :return: a list of dictionaries for each event
     """
 
-    events = []
+    events = list()
     for page in _get_response_pages(response_json):
         page_events = page["_embedded"]["events"]
         for event in page_events:
@@ -60,20 +60,8 @@ def _parse_ticketmaster_events(response_json: dict) -> List[dict]:
     return events
 
 
-def get_json(url: str) -> dict:
-    try:
-        r = requests.get(url)
-    # catches any request-related exception
-    except requests.exceptions.RequestException as e:
-        raise SystemExit(e)
-    return r.json()
-
-
 def get_ticketmaster_events() -> List[dict]:
     url = _get_ticketmaster_events_url()
-    r_json = get_json(url)
+    r_json = get_json(url, 200)
     return _parse_ticketmaster_events(r_json)
 
-
-result = get_ticketmaster_events()
-print(json.dumps(result, indent=4))
