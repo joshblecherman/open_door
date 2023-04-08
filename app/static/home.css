@@ -69,3 +69,13 @@
   color: #ffffff;
   font-family: sans-serif;
 }
+
+/* CSS IDs are meant to be only for one particular element. The # means it is an id and not a class */
+#edit-profile-button{
+  background-color: #8b0ef3;
+}
+
+#edit-profile-button:hover{
+  background-color: #6d0dbb;
+}
+

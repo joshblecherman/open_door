@@ -1,9 +1,84 @@
 {%extends "base.html"%}
 {%block section%}My profile{%endblock%}
 {%block content%}
-<div class = welcome-container>
-  <h2 class="welcome-message">
-    Your profile should show up here
-  </h2>
+<div style="margin-top: 50px;">
+  <!-- <img src="https://previews.123rf.com/images/larryrains/larryrains1901/larryrains190100027/118556689-laptop-a-vector-cartoon-illustration-of-a-computer-laptop.jpg" alt="This is the alternative text" class="img-thumbnail" id="profile-pic">
+  <div margin-left="5rem">This is the information about the user in question</div> -->
+
+  <section style="background-color: #eee;">
+    <div class="container py-5">
+  
+      <div class="row">
+        <div class="col-lg-4">
+          <div class="card mb-4">
+            <div class="card-body text-center">
+              <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
+                class="rounded-circle img-fluid" style="width: 150px;">
+              <h5 class="my-3">B42</h5>
+              <p class="text-muted mb-1">Computer Science</p>
+              <p class="text-muted mb-4">Broolkyn, NY</p>
+              <form class="d-flex justify-content-center mb-2">
+                <input type="button" class="btn btn-primary" id="edit-profile-button" value="Edit" action="#"/>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-8">
+          <div class="card mb-4">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Full Name</p>
+                </div>
+                <div class="col-sm-9">
+                  <p class="text-muted mb-0">Team B42</p>
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Email</p>
+                </div>
+                <div class="col-sm-9">
+                  <p class="text-muted mb-0">teamb42@teamb42.com</p>
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Phone</p>
+                </div>
+                <div class="col-sm-9">
+                  <p class="text-muted mb-0">(097) 234-5678</p>
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Mobile</p>
+                </div>
+                <div class="col-sm-9">
+                  <p class="text-muted mb-0">(098) 765-4321</p>
+                </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Address</p>
+                </div>
+                <div class="col-sm-9">
+                  <p class="text-muted mb-0">Brooklyn, NY</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+
 </div>
 {%endblock%}
