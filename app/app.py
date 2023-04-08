@@ -37,7 +37,9 @@ def profile_page():
         if tabs:
             return redirect(url_for(tabs))
     else:
-        return render_template('profile.html')
+        return render_template('profile.html', preferred_name="B42", major="Computer Science", 
+                               address="Brooklyn, NY", full_name="Team B42", email="teamB42@teamB42.com",
+                               phone="(097) 234-5678")
 
 
 @app.route('/studentevents', methods=["GET", "POST"])
