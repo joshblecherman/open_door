@@ -21,7 +21,7 @@ def check_main_tabs():
 
 @app.route('/', methods=["GET", "POST"])
 def home_page():
-    # db.test_db()
+    db.test_db()
     if request.method == 'POST':
         tabs = check_main_tabs()
         if tabs:
