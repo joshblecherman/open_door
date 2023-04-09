@@ -1,9 +1,72 @@
 {%extends "base.html"%}
 {%block section%}Fun Spots{%endblock%}
 {%block content%}
-<div class = welcome-container>
-  <h2 class="welcome-message">
-    All the fun spots should show up here
-  </h2>
+<div style="background-color: lightgray; vertical-align: middle;">
+  {%for i in range(num_spots)%}
+  <div class="card px-3 pt-3" style="max-width: 32rem; vertical-align: middle; margin:auto; margin-top: 10px;">
+    <!-- News block -->
+    <div>
+      <!-- Featured image -->
+      <div class="bg-image hover-overlay shadow-1-strong ripple rounded-5 mb-4" data-mdb-ripple-color="light">
+        <img src="https://mdbcdn.b-cdn.net/img/new/fluid/city/113.webp" class="img-fluid" />
+        <a href="#!">
+          <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
+        </a>
+      </div>
+  
+      <!-- Article title and description -->
+      
+      <h5>This is the name of the place</h5>
+  
+      <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit, iste aliquid. Sed
+          id nihil magni, sint vero provident esse numquam perferendis ducimus dicta
+          adipisci iusto nam temporibus modi animi laboriosam?
+      </p>
+      
+  
+      <hr />
+  
+      <!-- News -->
+      
+      <div class="row mb-4 border-bottom pb-2">
+        <div class="col-3">
+          <strong>Address:</strong>
+        </div>
+
+        <div class="col-9">
+          <p class="mb-2">Lorem ipsum dolor sit amet</p>
+        </div>
+      </div>
+      
+  
+      <!-- News -->
+      
+      <div class="row mb-4 border-bottom pb-2">
+        <div class="col-3">
+          <strong>Hours of Operation:</strong>
+        </div>
+
+        <div class="col-9">
+          <p class="mb-2">Lorem ipsum dolor sit amet</p>
+        </div>
+      </div>
+  
+      <!-- News -->
+      
+      <div class="row mb-4 border-bottom pb-2">
+        <div class="col-3">
+          <strong>URL:</strong>
+        </div>
+
+        <div class="col-9">
+          <p class="mb-2">Lorem ipsum dolor sit amet</p>
+        </div>
+      </div>
+  
+    </div>
+    <!-- News block -->
+  </div>
+  {%endfor%}
 </div>
 {%endblock%}
