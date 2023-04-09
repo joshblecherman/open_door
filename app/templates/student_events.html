@@ -1,9 +1,65 @@
 {%extends "base.html"%}
 {%block section%}Student Events{%endblock%}
 {%block content%}
-<div class = welcome-container>
-  <h2 class="welcome-message">
-    All the student events should show up here
-  </h2>
+<div style="margin-top: 50px; overflow-y:auto; overflow-x: hidden;">
+    {%for i in range(num_events)%}
+    <div class="row gx-5" style="border-bottom:5px solid #6d0dbb;">
+        <div class="col-md-6 mb-4">
+          <div class="bg-image hover-overlay ripple shadow-2-strong rounded-5" data-mdb-ripple-color="light">
+            <img src="https://mdbcdn.b-cdn.net/img/new/slides/080.webp" class="img-fluid rounded" />
+            <a href="#!">
+              <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
+            </a>
+          </div>
+        </div>
+      
+        <div class="col-md-6 mb-4">
+          <h4><strong>Hiking in the forest</strong></h4>
+          <div class="col-lg-8">
+            <div class="card mb-4">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-sm-3">
+                    <p class="mb-0">Location</p>
+                  </div>
+                  <div class="col-sm-9">
+                    <p class="text-muted mb-0">The forest</p>
+                  </div>
+                </div>
+                <hr>
+                <div class="row">
+                  <div class="col-sm-3">
+                    <p class="mb-0">Date</p>
+                  </div>
+                  <div class="col-sm-9">
+                    <p class="text-muted mb-0">May 1st</p>
+                  </div>
+                </div>
+                <hr>
+                <div class="row">
+                  <div class="col-sm-3">
+                    <p class="mb-0">Time</p>
+                  </div>
+                  <div class="col-sm-9">
+                    <p class="text-muted mb-0">10 AM</p>
+                  </div>
+                </div>
+                <hr>
+                <div class="row">
+                  <div class="col-sm-3">
+                    <p class="mb-0">Details</p>
+                  </div>
+                  <div class="col-sm-9">
+                    <p class="text-muted mb-0">These are the details</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <input type="button" class="btn btn-primary purple-button" value="RSVP" action="#"/>
+        </div>
+      </div>
+      {%endfor%}
 </div>
 {%endblock%}
+
