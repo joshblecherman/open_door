@@ -21,7 +21,7 @@ def check_main_tabs():
 
 @app.route('/', methods=["GET", "POST"])
 def home_page():
-    db.test_db()
+    # db.test_db()
     if request.method == 'POST':
         tabs = check_main_tabs()
         if tabs:
@@ -39,7 +39,7 @@ def profile_page():
     else:
         return render_template('profile.html', preferred_name="B42", major="Computer Science", 
                                dorm="Off-campus", full_name="Team B42", email="teamB42@teamB42.com",
-                               phone="(097) 234-5678")
+                               phone="(097) 234-5678", about_me="We are just CS students trying to graduate")
 
 
 @app.route('/studentevents', methods=["GET", "POST"])
@@ -60,7 +60,7 @@ def fun_spots_page():
         if tabs:
             return redirect(url_for(tabs))
     else:
-        return render_template('fun_spots.html')
+        return render_template('fun_spots.html', num_spots=4)
     
 @app.route('/happeninginnyc', methods=["GET", "POST"])
 def happening_in_nyc_page():
