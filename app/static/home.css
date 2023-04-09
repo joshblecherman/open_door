@@ -1,56 +1,71 @@
 .home-container {
   width: 100%;
+  left: 0px;
+  height: 100px;
   display: flex;
   overflow: auto;
-  min-height: 100vh;
   align-items: center;
   flex-direction: column;
-}
-.home-container1 {
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 155px;
-  display: flex;
-  position: absolute;
-  align-items: center;
-  border-color: rgba(197, 31, 31, 0);
-  border-style: dashed;
-  border-width: 2px;
-  justify-content: center;
   background-color: #8b0ef3;
+  vertical-align: text-bottom;
 }
+
 .home-text {
   color: #ffffff;
-  width: var(--dl-size-size-maxwidth);
-  font-size: xx-large;
-  align-self: center;
-  text-align: center;
   font-family: sans-serif;
   font-weight: 700;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  position: relative;
+  margin-top: 10px;
+  width: 100%;
+}
+
+.home-button {
+  flex: 1;
+  height: 50px;
+  border: none;
+  background-color: #8b0ef3;
+  color: #ffffff;
+  font-size: x-large;
+  font-weight: 500;
   line-height: 1.15;
   text-transform: none;
   text-decoration: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 10px;
+  
 }
-.home-button {
-  top: 165px;
-  left: 5px;
-  color: #fffcfc;
-  width: 439px;
-  height: 55px;
-  position: absolute;
-  align-self: flex-start;
-  border-color: #ffffff;
-  border-width: 0px;
+
+.home-button:hover{
+  background-color: #6d0dbb;
+}
+
+.welcome-container{
   background-color: #8b0ef3;
+
+  position: relative;
+  margin-top: 50px;
+  margin-left: 100px;
+  margin-right: 100px;
+  margin-bottom: 100px;
+  height: 600px;
 }
-.home-text1 {
-  top: 10px;
-  left: 0px;
-  right: 0px;
-  width: var(--dl-size-size-medium);
-  bottom: 0px;
-  margin: auto;
-  position: absolute;
-  font-size: x-large;
+
+.welcome-title{
+  color: #ffffff;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.welcome-message{
+  color: #ffffff;
+  font-family: sans-serif;
 }

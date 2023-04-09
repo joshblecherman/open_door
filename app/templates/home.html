@@ -1,15 +1,16 @@
-<div>
-  <link href='/static/home.css' rel="stylesheet" />
-  <div class="home-container">
-    <div class="home-container1 textarea">
-      <span class="home-text">Open Door</span>
-    </div>
-    <button type="button" class="home-button button">
-      <span class="home-text1 subtitle">
-        <span>Profile</span>
-        <br />
-        <br />
-      </span>
-    </button>
-  </div>
+{%extends "base.html"%}
+{%block section%}Open Door{%endblock%}
+{%block content%}
+<div class = welcome-container>
+  <h2 class="welcome-message">
+    We know it is scary to arrive at a new school, and even more when it is as big as NYU.<br>
+    This is a platform that will help you navigate through all the social opportunities that NYU has for you.<br>
+    The following are descriptions for the tabs that you can find above:<br><br>
+    
+    - Profile: In there you can preview and modify your profile that will be visible to other NYU students<br><br>
+    - Student Events: This is where you will find out about activities that NYU students are planning, and you could even schedule your own event!<br><br>
+    - Fun Spots: Here is where you will be able to see NYU common areas and other city locations where you can have fun.<br><br>
+    - Happening in NYC: New York City is one of the most lively cities, so we decided to gather information on the best events and activities happening around, so you can have tons of activity recommendations here.<br><br>
+  </h2>
 </div>
+{%endblock%}
