@@ -28,7 +28,7 @@ def home_page():
             return redirect(url_for(tabs))
     else:
         return render_template('home.html')
-
+    
 
 @app.route('/myprofile', methods=["GET", "POST"])
 def profile_page():
@@ -36,11 +36,24 @@ def profile_page():
         tabs = check_main_tabs()
         if tabs:
             return redirect(url_for(tabs))
+        elif request.form.get('Edit') == 'Edit':
+            return redirect(url_for('edit_profile_page'))
     else:
         return render_template('profile.html', preferred_name="B42", major="Computer Science", 
                                dorm="Off-campus", full_name="Team B42", email="teamB42@teamB42.com",
                                phone="(097) 234-5678", about_me="We are just CS students trying to graduate")
 
+
+@app.route('/editprofile', methods=["GET", "POST"])
+def edit_profile_page():
+    if request.method == 'POST':
+        if request.form.get('Cancel') == 'Cancel':
+            return redirect(url_for('profile_page'))
+        elif request.form.get('Save Profile') == 'Save Profile':
+            #Here is where all the backend for storing new profile data should go
+            return redirect(url_for('profile_page'))
+    else:
+        return render_template('profile_form.html')
 
 @app.route('/studentevents', methods=["GET", "POST"])
 def student_events_page():
