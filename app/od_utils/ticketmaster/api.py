@@ -24,26 +24,27 @@ def _get_ticketmaster_events_url() -> str:
     return f"{EVENTS_URL}city={CITY}&size={PAGE_SIZE}&apikey={API_KEY}&sort={SORT}&startDateTime={start_time}"
 
 
-def _get_response_pages(response_json: dict) -> Iterator[dict]:
+def _get_response_pages(url: str) -> Iterator[dict]:
     """
     :param response_json: events response json
     :return: iterator for pages in request
     """
-    curr_resp_json = response_json
+    curr_resp_json = get_json(url, 200)
+    yield curr_resp_json
     while "next" in curr_resp_json["_links"]:
         next_url = URL + curr_resp_json["_links"]["next"]["href"] + f"&apikey={API_KEY}"
         curr_resp_json = get_json(next_url, 200)
         yield curr_resp_json
 
 
-def _parse_ticketmaster_events(response_json: dict) -> List[dict]:
+def _parse_ticketmaster_events(url: str) -> List[dict]:
     """
     :param response_json: response json for NYC_EVENTS_URL
     :return: a list of dictionaries for each event
     """
 
     events = list()
-    for page in _get_response_pages(response_json):
+    for page in _get_response_pages(url):
         page_events = page["_embedded"]["events"]
         for event in page_events:
             new_event = dict(
@@ -62,6 +63,5 @@ def _parse_ticketmaster_events(response_json: dict) -> List[dict]:
 
 def get_ticketmaster_events() -> List[dict]:
     url = _get_ticketmaster_events_url()
-    r_json = get_json(url, 200)
-    return _parse_ticketmaster_events(r_json)
+    return _parse_ticketmaster_events(url)
 
