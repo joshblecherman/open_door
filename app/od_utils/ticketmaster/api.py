@@ -53,6 +53,7 @@ def _parse_ticketmaster_events(url: str) -> List[dict]:
                 url=event["url"],
                 start_date=event["dates"]["start"]["localDate"],
                 start_time=event["dates"]["start"]["localTime"],
+                image=event["images"][0]["url"]  # get the url of the first image
                 # TODO: add end_date, end_time IF it exists
                 # TODO: Maybe add genre, images
             )
