@@ -7,18 +7,20 @@
 </head>
 <body>
   <div>
-    <div class="home-container">
-      <h1 class="home-text">
-        {%block section%}{%endblock%}
-      </h1>
+    <div class="top-bar">
+        <div class="home-container">
+            <h1 class="home-text">
+                {%block section%}{%endblock%}
+            </h1>
+        </div>
+        <form class="button-container" action="#" method="post">
+            <input type="submit" class="home-button" name="my_profile" value="My Profile"/>
+            <input type="submit" class="home-button" name="student_events" value="Student Events"/>
+            <input type="submit" class="home-button" name="fun_spots" value="Fun Spots">
+            <input type="submit" class="home-button" name="happening_in_nyc" value="Happening in NYC"/>
+        </form>
     </div>
-    <form class="button-container" action="#" method="post">
-      <input type="submit" class="home-button" name="my_profile" value="My Profile"/>
-      <input type="submit" class="home-button" name="student_events" value="Student Events"/>
-      <input type="submit" class="home-button" name="fun_spots" value="Fun Spots">
-      <input type="submit" class="home-button" name="happening_in_nyc" value="Happening in NYC"/>
-    </form>
-    <div>{%block content%}{%endblock%}</div>
+    <div style="margin-top: 50px;">{%block content%}{%endblock%}</div>
   </div>
 </body>
 </html>

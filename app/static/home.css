@@ -57,6 +57,8 @@
   margin-right: 100px;
   margin-bottom: 100px;
   height: 600px;
+
+
 }
 
 .welcome-title{
@@ -68,4 +70,19 @@
 .welcome-message{
   color: #ffffff;
   font-family: sans-serif;
+}
+
+/* CSS IDs are meant to be only for one particular element. The # means it is an id and not a class */
+.purple-button{
+  background-color: #8b0ef3;
+}
+
+.purple-button:hover{
+  background-color: #6d0dbb;
+}
+
+.top-bar{
+  position: sticky;
+  top: 0;
+  z-index: 9999;
 }

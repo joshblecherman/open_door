@@ -37,7 +37,9 @@ def profile_page():
         if tabs:
             return redirect(url_for(tabs))
     else:
-        return render_template('profile.html')
+        return render_template('profile.html', preferred_name="B42", major="Computer Science", 
+                               dorm="Off-campus", full_name="Team B42", email="teamB42@teamB42.com",
+                               phone="(097) 234-5678", about_me="We are just CS students trying to graduate")
 
 
 @app.route('/studentevents', methods=["GET", "POST"])
@@ -46,8 +48,10 @@ def student_events_page():
         tabs = check_main_tabs()
         if tabs:
             return redirect(url_for(tabs))
+        elif request.form.get('see_rsvp_list') == 'See RSVP List':
+            return redirect(url_for('rsvp_list_page'))
     else:
-        return render_template('student_events.html')
+        return render_template('student_events.html', num_events=5)
 
 @app.route('/funspots', methods=["GET", "POST"])
 def fun_spots_page():
@@ -56,7 +60,7 @@ def fun_spots_page():
         if tabs:
             return redirect(url_for(tabs))
     else:
-        return render_template('fun_spots.html')
+        return render_template('fun_spots.html', num_spots=4)
     
 @app.route('/happeninginnyc', methods=["GET", "POST"])
 def happening_in_nyc_page():
@@ -66,6 +70,16 @@ def happening_in_nyc_page():
             return redirect(url_for(tabs))
     else:
         return render_template('happening_in_nyc.html')
+    
+@app.route('/rsvplist', methods=["GET", "POST"])
+def rsvp_list_page():
+    if request.method == 'POST':
+        if request.form.get('Back') == 'Back':
+            return redirect(url_for('student_events_page'))
+    else:
+        return render_template('rsvp_list.html', event_name = "The Hike", preferred_name="B42", major="Computer Science", 
+                               dorm="Off-campus", full_name="Team B42", email="teamB42@teamB42.com",
+                               phone="(097) 234-5678")
 
 if __name__ == '__main__':
     app.run()

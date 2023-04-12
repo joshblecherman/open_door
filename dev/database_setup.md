@@ -14,14 +14,14 @@ FOR MAC:
 
 ```
 CREATE TABLE IF NOT EXISTS profiles (
-   user_id              VARCHAR(10) PRIMARY KEY,
+   net_id               VARCHAR(10) PRIMARY KEY,
    dorm                 VARCHAR(50),
    major                VARCHAR(50),
    description          VARCHAR(2000)
 );
 
 CREATE TABLE IF NOT EXISTS users (
-   user_id              VARCHAR(10) PRIMARY KEY,
+   net_id               VARCHAR(10) PRIMARY KEY,
    password             VARCHAR(100) NOT NULL,
    profile              VARCHAR(10) NOT NULL REFERENCES profiles(user_id)
 );
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS activities (
    title                VARCHAR(50) NOT NULL,
    place                VARCHAR(50) NOT NULL,
    description          VARCHAR(2000),
-   time                 TIME NOT NULL,
+   datetime             TIMESTAMP NOT NULL,
    fee                  INT NOT NULL,
    url                  VARCHAR(255),
    img                  BYTEA,
@@ -44,10 +44,16 @@ CREATE TABLE IF NOT EXISTS student_events (
    notes                VARCHAR(2000)
 );
 
-CREATE TABLE IF NOT EXISTS ticketmaster_staging (
+/*
+Every table below here will be empty in production.
+They are only used to feed data from APIs into our database.
+*/
+CREATE TABLE IF NOT EXISTS ticketmaster (
    id                   INT PRIMARY KEY,
    name                 VARCHAR(50) NOT NULL,
-   time                 TIME NOT NULL
+   date                 DATE NOT NULL,
+   time                 TIME NOT NULL,
+   url                  VARCHAR(255) NOT NULL
 );
 ```
 
