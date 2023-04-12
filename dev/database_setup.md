@@ -14,25 +14,46 @@ FOR MAC:
 
 ```
 CREATE TABLE IF NOT EXISTS profiles (
-   user_id              VARCHAR(10) PRIMARY KEY,
+   net_id               VARCHAR(10) PRIMARY KEY,
    dorm                 VARCHAR(50),
    major                VARCHAR(50),
    description          VARCHAR(2000)
 );
 
 CREATE TABLE IF NOT EXISTS users (
-   user_id              VARCHAR(10) PRIMARY KEY,
+   net_id               VARCHAR(10) PRIMARY KEY,
    password             VARCHAR(100) NOT NULL,
    profile              VARCHAR(10) NOT NULL REFERENCES profiles(user_id)
 );
 
 CREATE TABLE IF NOT EXISTS activities (
-   activity_id          INT PRIMARY KEY,
+   activity_id          UUID PRIMARY KEY,                 
    title                VARCHAR(50) NOT NULL,
+   place                VARCHAR(50) NOT NULL,
    description          VARCHAR(2000),
+   datetime             TIMESTAMP NOT NULL,
    fee                  INT NOT NULL,
+   url                  VARCHAR(255),
+   img                  BYTEA,
    reservation_needed   boolean NOT NULL,
    rsvp_list            VARCHAR(10)[]
+);
+
+CREATE TABLE IF NOT EXISTS student_events (
+   id                   UUID REFERENCES activities(activity_id),
+   notes                VARCHAR(2000)
+);
+
+/*
+Every table below here will be empty in production.
+They are only used to feed data from APIs into our database.
+*/
+CREATE TABLE IF NOT EXISTS ticketmaster (
+   id                   INT PRIMARY KEY,
+   name                 VARCHAR(50) NOT NULL,
+   date                 DATE NOT NULL,
+   time                 TIME NOT NULL,
+   url                  VARCHAR(255) NOT NULL
 );
 ```
 
