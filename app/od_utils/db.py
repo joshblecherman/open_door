@@ -49,8 +49,7 @@ class StudentEvents(db.Model):
 
 class TicketmasterStaging(db.Model):
     __tablename__ = "ticketmaster_staging"
-    
-<<<<<<< HEAD
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     time = db.Column(db.DateTime, nullable=False)
@@ -72,14 +71,6 @@ def test_db():
         create_tables()
         remove_all_tables()
         print(db.metadata.tables.__dir__())
-=======
-    fetch_statement = """
-    SELECT * FROM users;
-    """
-    cur.execute(fetch_statement)
-    records = cur.fetchall()
-    print(records)
->>>>>>> origin/main
 
 if __name__ == '__main__':
     test_db()
