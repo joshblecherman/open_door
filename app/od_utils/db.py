@@ -1,68 +1,91 @@
-import psycopg2
+from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, current_app
+import uuid
 
-# Returns the connection (conn). Use conn.cursor() to execute SQL statements.
-def connect(db_url = "postgresql://postgres:opendoor@localhost:5432/postgres"):
-    conn = psycopg2.connect(db_url)
-    return conn
+app = current_app
+db = SQLAlchemy()
 
-def populate_database(cur):
-    insert_statement = """
-    INSERT INTO
-        profiles(user_id, dorm, major, description) 
-    VALUES
-        ('test1', 'a', 'aa', 'aaa'),
-        ('test2', 'b', 'bb', 'bbb'),
-        ('test3', 'c', 'cc', 'ccc'),
-        ('test4', 'd', 'dd', 'ddd'),
-        ('test5', 'e', 'ee', 'eee')
-    ON CONFLICT DO NOTHING
-    RETURNING *;
+class Profiles(db.Model):
+    __tablename__ = "profiles"
     
-    INSERT INTO
-        users(user_id, password, profile)
-    VALUES
-        ('test1', 'aa', 'test1'),
-        ('test2', 'bb', 'test2'),
-        ('test3', 'cc', 'test3'),
-        ('test4', 'dd', 'test4'),
-        ('test5', 'ee', 'test5')
-    ON CONFLICT DO NOTHING
-    RETURNING *;
+    net_id = db.Column(db.String(10), primary_key=True)
+    first_name = db.Column(db.String(50), nullable=False)
+    preferred_name = db.Column(db.String(50))
+    middle_name = db.Column(db.String(50))
+    last_name = db.Column(db.String(50), nullable=False)
+    dorm = db.Column(db.String(50))
+    major = db.Column(db.String(50))
+    description = db.Column(db.String(2000))
+
+class Users(db.Model):
+    __tablename__ = "users"
     
-    INSERT INTO
-        activities(activity_id, title, fee, reservation_needed, rsvp_list)
-    VALUES
-        (1, 'activity a', 0, false, ARRAY['test1', 'test2']),
-        (2, 'activity b', 5, true, ARRAY['']),
-        (3, 'activity c', 2000, false, ARRAY['test3'])
-    ON CONFLICT DO NOTHING
-    RETURNING *;
-    """
+    net_id = db.Column(db.String(10), primary_key=True)
+    dorm = db.Column(db.String(100), nullable=False)
+    profile = db.Column(db.String(10),
+                        db.ForeignKey("profiles.net_id"),
+                        nullable = False)
+
+class Activities(db.Model):
+    __tablename__ = "activities"
     
-    error_statement = """
-    INSERT INTO
-        users(user_id, password, profile)
-    VALUES
-        ('testerr', 'error', 'wrong')
-    RETURNING *;
-    """
+    activity_id = db.Column(db.Uuid, primary_key=True)
+    title = db.Column(db.String(50), nullable=False)
+    place = db.Column(db.String(50), nullable=False)
+    description = db.Column(db.String(2000))
+    datetime = db.Column(db.DateTime, nullable=False)
+    fee = db.Column(db.Integer, nullable=False)
+    url = db.Column(db.String(255))
+    img = db.Column(db.LargeBinary)
+    reservation_needed = db.Column(db.Boolean, nullable=False)
+    rsvp_list = db.Column(db.ARRAY(db.String(10)))
+
+class StudentEvents(db.Model):
+    __tablename__ = "student_events"
     
-    cur.execute(insert_statement)
-    records = cur.fetchall()
-    print(records)
+    id = db.Column(db.Uuid,
+                   db.ForeignKey("activities.activity_id"),
+                   primary_key=True)
+    notes = db.Column(db.String(2000))
+
+class Ticketmaster(db.Model):
+    __tablename__ = "ticketmaster"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    time = db.Column(db.Time, nullable=False)
+    img_url = db.Column(db.String(255))
+    url = db.Column(db.String(255), nullable=False)
+
+# Ignores any conflicts with existing tables.
+# Bear in mind any tables with the same name will not be made.
+# Any table structure changes must be done via the database's CLI.
+# Alternatively, drop all tables and recreate them.
+def create_tables():
+    with app.app_context():
+        db.create_all()
+
+# USE SPARINGLY DO NOT EVER USE THIS IN PRODUCTION
+# (So why did I make this? I dunno...)
+def drop_all_tables():
+    tables = [Users, Ticketmaster, StudentEvents, Activities, Profiles]
+
+    with app.app_context():
+        inspect = db.inspect(db.engine)
+        for table in tables:
+            if inspect.has_table(table.__tablename__):
+                table.__table__.drop(db.engine)
 
 def test_db():
-    conn = connect()
-    cur = conn.cursor()
-    
-    populate_database(cur)
-    
-    fetch_statement = """
-    SELECT * FROM users;
-    """
-    cur.execute(fetch_statement)
-    records = cur.fetchall()
-    print(records)
+    with app.app_context():
+        create_tables()
 
-    conn.commit()
-    conn.close()
+# Just for testing
+# if __name__ == '__main__':
+#     app = Flask(__name__)
+#     app.config['SQLALCHEMY_DATABASE_URI'] = \
+#         'postgresql://postgres:opendoor@localhost:5432/postgres'
+#     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+#     db.init_app(app)
+#     test_db()

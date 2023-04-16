@@ -2,6 +2,9 @@ from flask import Flask, render_template, redirect, request, url_for
 from od_utils import db
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = \
+    'postgresql://postgres:opendoor@localhost:5432/postgres'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 def check_main_tabs():
     if request.form.get('my_profile') == 'My Profile':
@@ -82,4 +85,5 @@ def rsvp_list_page():
                                phone="(097) 234-5678")
 
 if __name__ == '__main__':
+    db.db.init_app(app)
     app.run()

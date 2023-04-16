@@ -2,19 +2,27 @@
 
 I am using Windows 10 Home version 21H2 (OS build 19044.2486). I assume Mac/Linux follows very similar instructions but I could be wrong. Use at your own discretion.
 
-1. Install Postgres from https://www.postgresql.org/download/. Select the version you want (I used version 15.2) and install. Set the installation directory, password, and port number. Default port is port 5432, and testing used the password "opendoor".
+1. Install Postgres from https://www.postgresql.org/download/. Select the version you want (I used version 15.2) and install. Set the installation directory, password, and port number. Default port is port 5432, and testing used the password "opendoor". Finish the installation (no need to install extra packages).
 
-2. Finish and search for psql. The command-line took for psql should pop up. All of the defaults should be input, so just press enter until you get to the password prompt. When you get there, use the password you set.
-
-3. Once the command prompt is open, paste the following code into the window:
+From here, you only need to run `create_tables()` in `db.sql` to create the tables.
 
 FOR MAC: 
 
 1. Save yourself a lot of time and go here https://postgresapp.com/downloads.html
 
+## Accessing the command line
+
+1. To access the command line tool for psql, search for "psql" in your windows search bar. The command-line took for psql should pop up. All of the defaults should be input, so just press enter until you get to the password prompt. When you get there, use the password you set. It should connect you to the database command prompt.
+
+The database structure is as follows here (also seen in `db.py`)
+
 ```
 CREATE TABLE IF NOT EXISTS profiles (
    net_id               VARCHAR(10) PRIMARY KEY,
+   first_name           VARCHAR(50) NOT NULL,
+   preferred_name       VARCHAR(50),
+   middle_name          VARCHAR(50),
+   last_name            VARCHAR(50) NOT NULL,
    dorm                 VARCHAR(50),
    major                VARCHAR(50),
    description          VARCHAR(2000)
@@ -53,6 +61,7 @@ CREATE TABLE IF NOT EXISTS ticketmaster (
    name                 VARCHAR(50) NOT NULL,
    date                 DATE NOT NULL,
    time                 TIME NOT NULL,
+   img_url              VARCHAR(255),
    url                  VARCHAR(255) NOT NULL
 );
 ```
