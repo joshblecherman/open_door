@@ -1,7 +1,6 @@
-import json
 import datetime
 from typing import *
-from app.od_utils.api_utils.api_utils import get_json
+
 
 API_SECRET = "J0zAFpB9xDbb9o4Y"  # not sure if it is needed for anything, but here just in case
 API_KEY = "eKRil5sqCyPFlHFxHTB7ubR4avgMG1pI"
@@ -29,6 +28,8 @@ def _get_response_pages(url: str) -> Iterator[dict]:
     :param response_json: events response json
     :return: iterator for pages in request
     """
+    from od_app.od_utils.api_utils.api_utils import get_json
+
     curr_resp_json = get_json(url, 200)
     yield curr_resp_json
     while "next" in curr_resp_json["_links"]:
@@ -48,14 +49,12 @@ def _parse_ticketmaster_events(url: str) -> List[dict]:
         page_events = page["_embedded"]["events"]
         for event in page_events:
             new_event = dict(
-                event_name=event["name"],
+                name=event["name"],
                 id=event["id"],
                 url=event["url"],
-                start_date=event["dates"]["start"]["localDate"],
-                start_time=event["dates"]["start"]["localTime"],
-                image=event["images"][0]["url"]  # get the url of the first image
-                # TODO: add end_date, end_time IF it exists
-                # TODO: Maybe add genre, images
+                date=event["dates"]["start"]["localDate"],
+                time=event["dates"]["start"]["localTime"],
+                img_url=event["images"][0]["url"]  # get the url of the first image
             )
             events.append(new_event)
 
@@ -66,3 +65,18 @@ def get_ticketmaster_events() -> List[dict]:
     url = _get_ticketmaster_events_url()
     return _parse_ticketmaster_events(url)
 
+
+def load_ticketmaster_table(app):
+    from od_app.od_utils import db
+    from od_app.od_utils.db import Ticketmaster
+
+    payload = get_ticketmaster_events()
+
+    for p in payload:
+        record = Ticketmaster(**p)
+        with app.app_context():
+            db.add(data=record, commit=True, overwrite=True)
+
+
+def delete_old_records_from_ticketmaster_table():
+    curr_date = datetime.datetime.now()

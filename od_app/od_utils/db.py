@@ -7,13 +7,12 @@ it refers to an object pertaining to a class,
 such as Profiles(net_id="jd1234", first_name="John", last_name="Doe")
 """
 
-from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, current_app
 from typing import Type
 import uuid
+from od_app import db
+from od_app import app
 
-app = current_app
-db = SQLAlchemy()
 
 class Profiles(db.Model):
     __tablename__ = "profiles"
@@ -185,7 +184,7 @@ def delete(table_class: Type[db.Model], pk: any, commit = True) -> db.Model:
 
     return data
 
-def run_raw_sql(statement: str) -> list:
+def run_raw_sql(statement: str):
     """Runs the given SQL statement. Use as sparingly as possible,
     as this does not work with the SQLAlchemy models, but rather
     returns lists of tuples. No error checking is done here,
