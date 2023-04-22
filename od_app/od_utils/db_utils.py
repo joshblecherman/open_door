@@ -60,8 +60,8 @@ class StudentEvents(db.Model):
 class Ticketmaster(db.Model):
     __tablename__ = "ticketmaster"
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
+    id = db.Column(db.String(50), primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
     date = db.Column(db.Date, nullable=False)
     time = db.Column(db.Time, nullable=False)
     img_url = db.Column(db.String(255))

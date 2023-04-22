@@ -1,5 +1,5 @@
 from flask import render_template, redirect, request, url_for
-from od_app import db
+from od_app.od_utils import db_utils
 from od_app import app
 from od_app.od_utils.ticketmaster import api
 
@@ -83,6 +83,7 @@ def rsvp_list_page():
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()
+        db_utils.drop_all_tables()
+        db_utils.create_tables()
         api.load_ticketmaster_table(app)
     app.run()

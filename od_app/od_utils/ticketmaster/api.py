@@ -67,15 +67,15 @@ def get_ticketmaster_events() -> List[dict]:
 
 
 def load_ticketmaster_table(app):
-    from od_app.od_utils import db
-    from od_app.od_utils.db import Ticketmaster
+    from od_app.od_utils import db_utils
+    from od_app.od_utils.db_utils import Ticketmaster
 
     payload = get_ticketmaster_events()
 
     for p in payload:
         record = Ticketmaster(**p)
         with app.app_context():
-            db.add(data=record, commit=True, overwrite=True)
+            db_utils.add(data=record, commit=True, overwrite=True)
 
 
 def delete_old_records_from_ticketmaster_table():
