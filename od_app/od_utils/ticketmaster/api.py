@@ -1,4 +1,5 @@
 import datetime
+import time
 from typing import *
 
 
@@ -52,8 +53,8 @@ def _parse_ticketmaster_events(url: str) -> List[dict]:
                 name=event["name"],
                 id=event["id"],
                 url=event["url"],
-                date=event["dates"]["start"]["localDate"],
-                time=event["dates"]["start"]["localTime"],
+                date=datetime.datetime.strptime(event["dates"]["start"]["localDate"], "%Y-%m-%d"),
+                time=time.strptime(event["dates"]["start"]["localTime"], "%H:%M:%S"),
                 img_url=event["images"][0]["url"]  # get the url of the first image
             )
             events.append(new_event)
@@ -61,16 +62,18 @@ def _parse_ticketmaster_events(url: str) -> List[dict]:
     return events
 
 
-def get_ticketmaster_events() -> List[dict]:
+def _get_ticketmaster_events() -> List[dict]:
     url = _get_ticketmaster_events_url()
     return _parse_ticketmaster_events(url)
 
 
-def load_ticketmaster_table(app):
+def _ticketmaster_api_to_ticketmaster_table():
     from od_app.od_utils import db_utils
     from od_app.od_utils.db_utils import Ticketmaster
+    from od_app import app
 
-    payload = get_ticketmaster_events()
+    db_utils.run_raw_sql("TRUNCATE TABLE Ticketmaster")  # delete all from table before loading
+    payload = _get_ticketmaster_events()
 
     for p in payload:
         record = Ticketmaster(**p)
@@ -78,5 +81,22 @@ def load_ticketmaster_table(app):
             db_utils.add(data=record, commit=True, overwrite=True)
 
 
-def delete_old_records_from_ticketmaster_table():
-    curr_date = datetime.datetime.now()
+def _ticketmaster_table_to_activities_table():
+    from od_app.od_utils import db_utils
+    db_utils.run_raw_sql(
+        """
+        WITH activities_conversion (
+            activities_id, title, place, description, datetime, fee, url, img, reservation_needed, rsvp_list
+        ) as 
+        SELECT (
+            uuid(id), name,  NULL,  NULL, date + time, NULL, url, NULL, True, NULL 
+        ) FROM Ticketmaster 
+        INSERT * INTO Activities FROM activities_conversion  
+        """
+    )
+
+
+def ticketmaster_api_to_activities_table():
+    _ticketmaster_api_to_ticketmaster_table()
+    _ticketmaster_table_to_activities_table()
+

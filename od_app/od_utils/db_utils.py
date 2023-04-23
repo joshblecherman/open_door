@@ -40,10 +40,10 @@ class Activities(db.Model):
     
     activity_id = db.Column(db.Uuid, primary_key=True)
     title = db.Column(db.String(50), nullable=False)
-    place = db.Column(db.String(50), nullable=False)
+    place = db.Column(db.String(50))
     description = db.Column(db.String(2000))
     datetime = db.Column(db.DateTime, nullable=False)
-    fee = db.Column(db.Integer, nullable=False)
+    fee = db.Column(db.Integer)
     url = db.Column(db.String(255))
     img = db.Column(db.LargeBinary)
     reservation_needed = db.Column(db.Boolean, nullable=False)
@@ -184,19 +184,25 @@ def delete(table_class: Type[db.Model], pk: any, commit = True) -> db.Model:
 
     return data
 
-def run_raw_sql(statement: str):
+def run_raw_sql(statement: str, get_output: bool=False):
     """Runs the given SQL statement. Use as sparingly as possible,
     as this does not work with the SQLAlchemy models, but rather
     returns lists of tuples. No error checking is done here,
     and inputs are not sanitized (yet?), so run at your own risk.
     
     :param statement: SQL statement to run.
+    :param get_output: True if the output should be returned.
+    If the query does not return rows, setting get_output=True will raise an exception
     :type statement: str
     
-    :return: List of results of SQL statement.
+    :return: List of results of SQL statement if get_output is True
     """
+    res = None
     with app.app_context():
-        print(db.session.execute(db.text(statement)).all())
+        if get_output:
+            res = db.session.execute(db.text(statement)).all()
+    return res
+
 
 def commit():
     """Saves all changes to the database.

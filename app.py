@@ -83,7 +83,7 @@ def rsvp_list_page():
 
 if __name__ == '__main__':
     with app.app_context():
-        db_utils.drop_all_tables()
+        # db_utils.drop_all_tables()
         db_utils.create_tables()
-        api.load_ticketmaster_table(app)
+        api.ticketmaster_api_to_activities_table()
     app.run()
