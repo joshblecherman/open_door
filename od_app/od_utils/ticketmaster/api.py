@@ -1,5 +1,4 @@
 import datetime
-import time
 from typing import *
 
 
@@ -53,8 +52,8 @@ def _parse_ticketmaster_events(url: str) -> List[dict]:
                 name=event["name"],
                 id=event["id"],
                 url=event["url"],
-                date=datetime.datetime.strptime(event["dates"]["start"]["localDate"], "%Y-%m-%d"),
-                time=time.strptime(event["dates"]["start"]["localTime"], "%H:%M:%S"),
+                date=event["dates"]["start"]["localDate"],
+                time=event["dates"]["start"]["localTime"],
                 img_url=event["images"][0]["url"]  # get the url of the first image
             )
             events.append(new_event)
@@ -85,13 +84,10 @@ def _ticketmaster_table_to_activities_table():
     from od_app.od_utils import db_utils
     db_utils.run_raw_sql(
         """
-        WITH activities_conversion (
-            activities_id, title, place, description, datetime, fee, url, img, reservation_needed, rsvp_list
-        ) as 
-        SELECT (
-            uuid(id), name,  NULL,  NULL, date + time, NULL, url, NULL, True, NULL 
-        ) FROM Ticketmaster 
-        INSERT * INTO Activities FROM activities_conversion  
+        INSERT INTO public.activities 
+        (activity_id, title, place, description, datetime, fee, url, img_url, reservation_needed, rsvp_list)
+        SELECT 
+        md5(t.id)::uuid, t.name, NULL, NULL, t.date + t.time, NULL, t.url, t.img_url, true, NULL FROM public.ticketmaster t;
         """
     )
 

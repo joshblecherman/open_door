@@ -7,7 +7,7 @@ it refers to an object pertaining to a class,
 such as Profiles(net_id="jd1234", first_name="John", last_name="Doe")
 """
 
-from flask import Flask, current_app
+from flask import Flask
 from typing import Type
 import uuid
 from od_app import db
@@ -39,13 +39,13 @@ class Activities(db.Model):
     __tablename__ = "activities"
     
     activity_id = db.Column(db.Uuid, primary_key=True)
-    title = db.Column(db.String(50), nullable=False)
-    place = db.Column(db.String(50))
+    title = db.Column(db.String(255), nullable=False)
+    place = db.Column(db.String(255))
     description = db.Column(db.String(2000))
     datetime = db.Column(db.DateTime, nullable=False)
     fee = db.Column(db.Integer)
     url = db.Column(db.String(255))
-    img = db.Column(db.LargeBinary)
+    img_url = db.Column(db.String(255))
     reservation_needed = db.Column(db.Boolean, nullable=False)
     rsvp_list = db.Column(db.ARRAY(db.String(10)))
 
@@ -201,6 +201,11 @@ def run_raw_sql(statement: str, get_output: bool=False):
     with app.app_context():
         if get_output:
             res = db.session.execute(db.text(statement)).all()
+            db.session.commit()
+        else:
+            db.session.execute(db.text(statement))
+            db.session.commit()
+            db.session.close()
     return res
 
 
