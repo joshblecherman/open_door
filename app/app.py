@@ -30,7 +30,7 @@ def home_page():
             return redirect(url_for(tabs))
     else:
         return render_template('home.html')
-
+    
 
 @app.route('/myprofile', methods=["GET", "POST"])
 def profile_page():
@@ -38,11 +38,24 @@ def profile_page():
         tabs = check_main_tabs()
         if tabs:
             return redirect(url_for(tabs))
+        elif request.form.get('Edit') == 'Edit':
+            return redirect(url_for('edit_profile_page'))
     else:
         return render_template('profile.html', preferred_name="B42", major="Computer Science", 
                                dorm="Off-campus", full_name="Team B42", email="teamB42@teamB42.com",
                                phone="(097) 234-5678", about_me="We are just CS students trying to graduate")
 
+
+@app.route('/editprofile', methods=["GET", "POST"])
+def edit_profile_page():
+    if request.method == 'POST':
+        if request.form.get('Cancel') == 'Cancel':
+            return redirect(url_for('profile_page'))
+        elif request.form.get('Save Profile') == 'Save Profile':
+            #Here is where all the backend for storing new profile data should go
+            return redirect(url_for('profile_page'))
+    else:
+        return render_template('profile_form.html')
 
 @app.route('/studentevents', methods=["GET", "POST"])
 def student_events_page():
@@ -52,8 +65,17 @@ def student_events_page():
             return redirect(url_for(tabs))
         elif request.form.get('see_rsvp_list') == 'See RSVP List':
             return redirect(url_for('rsvp_list_page'))
+        elif request.form.get('New') == 'New':
+            return redirect(url_for('new_event_page'))
     else:
         return render_template('student_events.html', num_events=5)
+    
+@app.route('/newevent', methods=["GET", "POST"])
+def new_event_page():
+    if request.method == 'POST':
+        return redirect(url_for('student_events_page')) # This will need to be changed to whatever the POST is
+    else:
+        return render_template('new_event.html')
 
 @app.route('/funspots', methods=["GET", "POST"])
 def fun_spots_page():
