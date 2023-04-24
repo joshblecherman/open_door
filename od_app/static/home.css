@@ -86,3 +86,27 @@
   top: 0;
   z-index: 9999;
 }
+
+
+.new-button {
+  background-color: #8b0ef3;
+  color: #ffffff;
+  font-size: x-large;
+  font-weight: 500;
+  line-height: 1.15;
+  text-transform: none;
+  text-decoration: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  border: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  margin-right: 10px;
+
+  margin-top: 5px;
+  z-index: 9999;
+}
