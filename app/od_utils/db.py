@@ -10,6 +10,8 @@ such as Profiles(net_id="jd1234", first_name="John", last_name="Doe")
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, current_app
 from typing import Type
+import datetime
+import jwt
 import uuid
 
 app = current_app
@@ -35,6 +37,45 @@ class Users(db.Model):
     profile = db.Column(db.String(10),
                         db.ForeignKey("profiles.net_id"),
                         nullable = False)
+
+    # Code stolen from
+    # https://github.com/realpython/flask-jwt-auth/blob/d252dd88c7271580cbebc24c54f0259779123537/project/server/models.py#L28
+    def encode_auth_token(self, net_id):
+        """
+        Generates the Auth Token
+        :return: string
+        """
+        try:
+            payload = {
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5),
+                'iat': datetime.datetime.utcnow(),
+                'sub': net_id
+            }
+            print(app.config.get('SECRET_KEY'))
+            return jwt.encode(
+                payload,
+                app.config.get('SECRET_KEY'),
+                algorithm='HS256'
+            )
+        except Exception as e:
+            return e
+
+    @staticmethod
+    def decode_auth_token(auth_token):
+        """
+        Validates the auth token
+        :param auth_token:
+        :return: integer|string
+        """
+        try:
+            print(app.config.get('SECRET_KEY'))
+            payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'))
+            print(payload['sub'])
+            return payload['sub']
+        except jwt.ExpiredSignatureError:
+            return 'Signature expired. Please log in again.'
+        except jwt.InvalidTokenError:
+            return 'Invalid token. Please log in again.'
 
 class Activities(db.Model):
     __tablename__ = "activities"
@@ -150,21 +191,21 @@ def get_col_names(table_class: Type[db.Model]) -> list[str]:
     with app.app_context():
         return table_class.__table__.columns.keys()
 
-# def login(net_id, pw):
-#     """Logs in a user with the requested username and password.
+def login(net_id, pw):
+    """Logs in a user with the requested username and password.
     
-#     :param net_id: NYU NetID used to login
-#     :type net_id: str
-#     :param pw: User password
-#     :type pw: pw
+    :param net_id: NYU NetID used to login
+    :type net_id: str
+    :param pw: User password
+    :type pw: pw
     
-#     :return: Token on successful authentication, None otherwise
-#     """
-#     user = get_with_attribute(Users, {"net_id": net_id, "password": pw})
-#     if user != None:
-#         True
+    :return: Token on successful authentication, None otherwise
+    """
+    user = get_with_attributes(Users, {"net_id": net_id, "password": pw})
+    if user != None:
+        return user[0].encode_auth_token(net_id)
     
-#     return None
+    return None
 
 def delete(table_class: Type[db.Model], pk: any, commit = True) -> db.Model:
     """Deletes model from its respective table via its primary key.
@@ -197,7 +238,7 @@ def run_raw_sql(statement: str) -> list:
     :return: List of results of SQL statement.
     """
     with app.app_context():
-        print(db.session.execute(db.text(statement)).all())
+        return db.session.execute(db.text(statement)).all()
 
 def commit():
     """Saves all changes to the database.
@@ -245,6 +286,7 @@ if __name__ == '__main__':
     app.config['SQLALCHEMY_DATABASE_URI'] = \
         'postgresql://postgres:opendoor@localhost:5432/postgres'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SECRET_KEY'] = "wzb9Sp@WCn!3t4Jy" #For login tokens
     db.init_app(app)
     
     test_db()

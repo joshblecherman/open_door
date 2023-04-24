@@ -5,6 +5,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = \
     'postgresql://postgres:opendoor@localhost:5432/postgres'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = "wzb9Sp@WCn!3t4Jy" #For login tokens
 
 def check_main_tabs():
     if request.form.get('my_profile') == 'My Profile':
