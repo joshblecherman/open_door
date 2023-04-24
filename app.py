@@ -1,10 +1,7 @@
-from flask import Flask, render_template, redirect, request, url_for
-from od_utils import db
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = \
-    'postgresql://postgres:opendoor@localhost:5432/postgres'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+from flask import render_template, redirect, request, url_for
+from od_app.od_utils import db_utils
+from od_app import app, db
+from od_app.od_utils.ticketmaster import api
 
 def check_main_tabs():
     if request.form.get('my_profile') == 'My Profile':
@@ -105,6 +102,10 @@ def rsvp_list_page():
                                dorm="Off-campus", full_name="Team B42", email="teamB42@teamB42.com",
                                phone="(097) 234-5678")
 
+
 if __name__ == '__main__':
-    db.db.init_app(app)
+    # db_utils.drop_all_tables()
+    with app.app_context():
+        db.create_all()
+        api.ticketmaster_api_to_activities_table()
     app.run()
