@@ -7,15 +7,16 @@ it refers to an object pertaining to a class,
 such as Profiles(net_id="jd1234", first_name="John", last_name="Doe")
 """
 
-from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, current_app
+from flask import Flask
 from typing import Type
+
 import datetime
 import jwt
 import uuid
 
-app = current_app
-db = SQLAlchemy()
+from od_app import db
+from od_app import app
+
 
 class Profiles(db.Model):
     __tablename__ = "profiles"
@@ -81,14 +82,15 @@ class Activities(db.Model):
     __tablename__ = "activities"
     
     activity_id = db.Column(db.Uuid, primary_key=True)
-    title = db.Column(db.String(50), nullable=False)
-    place = db.Column(db.String(50), nullable=False)
+    title = db.Column(db.String(255), nullable=False)
+    place = db.Column(db.String(255))
     description = db.Column(db.String(2000))
     datetime = db.Column(db.DateTime, nullable=False)
-    fee = db.Column(db.Integer, nullable=False)
+    fee = db.Column(db.Integer)
     url = db.Column(db.String(255))
-    img = db.Column(db.LargeBinary)
+    img_url = db.Column(db.String(255))
     reservation_needed = db.Column(db.Boolean, nullable=False)
+    source = db.Column(db.String(63), nullable=False)
     rsvp_list = db.Column(db.ARRAY(db.String(10)))
 
 class StudentEvents(db.Model):
@@ -102,8 +104,8 @@ class StudentEvents(db.Model):
 class Ticketmaster(db.Model):
     __tablename__ = "ticketmaster"
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
+    id = db.Column(db.String(50), primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
     date = db.Column(db.Date, nullable=False)
     time = db.Column(db.Time, nullable=False)
     img_url = db.Column(db.String(255))
@@ -226,19 +228,30 @@ def delete(table_class: Type[db.Model], pk: any, commit = True) -> db.Model:
 
     return data
 
-def run_raw_sql(statement: str) -> list:
+def run_raw_sql(statement: str, get_output: bool=False):
     """Runs the given SQL statement. Use as sparingly as possible,
     as this does not work with the SQLAlchemy models, but rather
     returns lists of tuples. No error checking is done here,
     and inputs are not sanitized (yet?), so run at your own risk.
     
     :param statement: SQL statement to run.
+    :param get_output: True if the output should be returned.
+    If the query does not return rows, setting get_output=True will raise an exception
     :type statement: str
     
-    :return: List of results of SQL statement.
+    :return: List of results of SQL statement if get_output is True
     """
+    res = None
     with app.app_context():
-        return db.session.execute(db.text(statement)).all()
+        if get_output:
+            res = db.session.execute(db.text(statement)).all()
+            db.session.commit()
+        else:
+            db.session.execute(db.text(statement))
+            db.session.commit()
+            db.session.close()
+    return res
+
 
 def commit():
     """Saves all changes to the database.
