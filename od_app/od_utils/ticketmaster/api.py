@@ -84,10 +84,41 @@ def _ticketmaster_table_to_activities_table():
     from od_app.od_utils import db_utils
     db_utils.run_raw_sql(
         """
-        INSERT INTO public.activities 
-        (activity_id, title, place, description, datetime, fee, url, img_url, reservation_needed, rsvp_list)
-        SELECT 
-        md5(t.id)::uuid, t.name, NULL, NULL, t.date + t.time, NULL, t.url, t.img_url, true, NULL FROM public.ticketmaster t;
+        INSERT INTO PUBLIC.activities
+            (
+                        activity_id,
+                        title,
+                        place,
+                        description,
+                        datetime,
+                        fee,
+                        url,
+                        img_url,
+                        reservation_needed,
+                        rsvp_list
+            )
+        SELECT Md5(t.id)::uuid,
+               t.NAME,
+               NULL,
+               NULL,
+               t.date + t.time,
+               NULL,
+               t.url,
+               t.img_url,
+               true,
+               NULL
+        FROM   PUBLIC.ticketmaster t
+        ON conflict (activity_id) do UPDATE
+        set    activity_id = excluded.activity_id,
+               title = excluded.title,
+               place = excluded.place,
+               description = excluded.description,
+               datetime = excluded.datetime,
+               fee = excluded.fee,
+               url = excluded.url,
+               img_url = excluded.img_url,
+               reservation_needed = excluded.reservation_needed,
+               rsvp_list = excluded.rsvp_list;
         """
     )
 
