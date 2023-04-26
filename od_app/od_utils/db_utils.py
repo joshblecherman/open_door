@@ -11,12 +11,12 @@ from flask import Flask
 from typing import Type
 
 import datetime
+import hashlib
 import jwt
 import uuid
 
 from od_app import db
 from od_app import app
-
 
 class Profiles(db.Model):
     __tablename__ = "profiles"
@@ -52,7 +52,6 @@ class Users(db.Model):
                 'iat': datetime.datetime.utcnow(),
                 'sub': net_id
             }
-            print(app.config.get('SECRET_KEY'))
             return jwt.encode(
                 payload,
                 app.config.get('SECRET_KEY'),
@@ -69,9 +68,7 @@ class Users(db.Model):
         :return: integer|string
         """
         try:
-            print(app.config.get('SECRET_KEY'))
             payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'))
-            print(payload['sub'])
             return payload['sub']
         except jwt.ExpiredSignatureError:
             return 'Signature expired. Please log in again.'
@@ -93,14 +90,6 @@ class Activities(db.Model):
     source = db.Column(db.String(63), nullable=False)
     rsvp_list = db.Column(db.ARRAY(db.String(10)))
 
-class StudentEvents(db.Model):
-    __tablename__ = "student_events"
-    
-    id = db.Column(db.Uuid,
-                   db.ForeignKey("activities.activity_id"),
-                   primary_key=True)
-    notes = db.Column(db.String(2000))
-
 class Ticketmaster(db.Model):
     __tablename__ = "ticketmaster"
 
@@ -110,7 +99,40 @@ class Ticketmaster(db.Model):
     time = db.Column(db.Time, nullable=False)
     img_url = db.Column(db.String(255))
     url = db.Column(db.String(255), nullable=False)
-
+    
+class StudentEvents(db.Model):
+    __tablename__ = "student_events"
+    
+    net_id = db.Column(db.String(10), primary_key = True)
+    title = db.Column(db.String(255), nullable = False)
+    place = db.Column(db.String(127), nullable = False)
+    description = db.Column(db.String(2000))
+    fee = db.Column(db.Integer)
+    url = db.Column(db.String(255))
+    date = db.Column(db.Date, nullable = False)
+    time = db.Column(db.Time, nullable = False)
+    reservation_needed = db.Column(db.Boolean, nullable = False)
+    
+    def add_to_activities(self):
+        attr = {col.name: getattr(self, col.name) for col in self.__table__.columns}
+        date = attr['date']
+        time = attr['time']
+        net_id = attr['net_id']
+        attr.pop('date')
+        attr.pop('time')
+        attr.pop('net_id')
+        
+        attr['source'] = "student_events"
+        attr['datetime'] = date + " " + time
+        curr_time = datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")
+        hash_str = net_id + attr['title'] + attr['place'] + \
+                    date + time + curr_time
+        hash_md5 = hashlib.md5(bytes(hash_str, 'utf-8')).hexdigest()
+        attr['activity_id'] = uuid.UUID(hash_md5)
+        
+        add(Activities(**attr))
+        
+        
 def create_tables():
     """Ignores any conflicts with existing tables.
     Bear in mind any tables with the same name will not be made.

@@ -54,7 +54,7 @@ def _parse_ticketmaster_events(url: str) -> List[dict]:
                 url=event["url"],
                 date=event["dates"]["start"]["localDate"],
                 time=event["dates"]["start"]["localTime"],
-                img_url=event["images"][0]["url"]  # get the url of the first image
+                img_url=event["images"][0]["url"],  # get the url of the first image
             )
             events.append(new_event)
 
@@ -85,9 +85,9 @@ def _ticketmaster_table_to_activities_table():
     db_utils.run_raw_sql(
         """
         INSERT INTO public.activities 
-        (activity_id, title, place, description, datetime, fee, url, img_url, reservation_needed, rsvp_list)
+        (activity_id, title, place, description, datetime, fee, url, img_url, reservation_needed, source, rsvp_list)
         SELECT 
-        md5(t.id)::uuid, t.name, NULL, NULL, t.date + t.time, NULL, t.url, t.img_url, true, NULL FROM public.ticketmaster t;
+        md5(t.id)::uuid, t.name, NULL, NULL, t.date + t.time, NULL, t.url, t.img_url, true, 'ticketmaster', NULL FROM public.ticketmaster t;
         """
     )
 
