@@ -9,10 +9,14 @@ such as Profiles(net_id="jd1234", first_name="John", last_name="Doe")
 
 from flask import Flask
 from typing import Type
+
+import datetime
+import hashlib
+import jwt
 import uuid
+
 from od_app import db
 from od_app import app
-
 
 class Profiles(db.Model):
     __tablename__ = "profiles"
@@ -35,6 +39,42 @@ class Users(db.Model):
                         db.ForeignKey("profiles.net_id"),
                         nullable = False)
 
+    # Code stolen from
+    # https://github.com/realpython/flask-jwt-auth/blob/d252dd88c7271580cbebc24c54f0259779123537/project/server/models.py#L28
+    def encode_auth_token(self, net_id):
+        """
+        Generates the Auth Token
+        :return: string
+        """
+        try:
+            payload = {
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5),
+                'iat': datetime.datetime.utcnow(),
+                'sub': net_id
+            }
+            return jwt.encode(
+                payload,
+                app.config.get('SECRET_KEY'),
+                algorithm='HS256'
+            )
+        except Exception as e:
+            return e
+
+    @staticmethod
+    def decode_auth_token(auth_token):
+        """
+        Validates the auth token
+        :param auth_token:
+        :return: integer|string
+        """
+        try:
+            payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'))
+            return payload['sub']
+        except jwt.ExpiredSignatureError:
+            return 'Signature expired. Please log in again.'
+        except jwt.InvalidTokenError:
+            return 'Invalid token. Please log in again.'
+
 class Activities(db.Model):
     __tablename__ = "activities"
     
@@ -47,8 +87,8 @@ class Activities(db.Model):
     url = db.Column(db.String(255))
     img_url = db.Column(db.String(255))
     reservation_needed = db.Column(db.Boolean, nullable=False)
+    source = db.Column(db.String(63), nullable=False)
     rsvp_list = db.Column(db.ARRAY(db.String(10)))
-
 class StudentEvents(db.Model):
     __tablename__ = "student_events"
     
@@ -68,7 +108,6 @@ class NYUEvents(db.Model):
     description = db.Column(db.String(5000), nullable=True)
     fee = db.Column(db.Integer, nullable=True)
 
-
 class Ticketmaster(db.Model):
     __tablename__ = "ticketmaster"
 
@@ -78,7 +117,40 @@ class Ticketmaster(db.Model):
     time = db.Column(db.Time, nullable=False)
     img_url = db.Column(db.String(255))
     url = db.Column(db.String(255), nullable=False)
-
+    
+class StudentEvents(db.Model):
+    __tablename__ = "student_events"
+    
+    net_id = db.Column(db.String(10), primary_key = True)
+    title = db.Column(db.String(255), nullable = False)
+    place = db.Column(db.String(127), nullable = False)
+    description = db.Column(db.String(2000))
+    fee = db.Column(db.Integer)
+    url = db.Column(db.String(255))
+    date = db.Column(db.Date, nullable = False)
+    time = db.Column(db.Time, nullable = False)
+    reservation_needed = db.Column(db.Boolean, nullable = False)
+    
+    def add_to_activities(self):
+        attr = {col.name: getattr(self, col.name) for col in self.__table__.columns}
+        date = attr['date']
+        time = attr['time']
+        net_id = attr['net_id']
+        attr.pop('date')
+        attr.pop('time')
+        attr.pop('net_id')
+        
+        attr['source'] = "student_events"
+        attr['datetime'] = date + " " + time
+        curr_time = datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")
+        hash_str = net_id + attr['title'] + attr['place'] + \
+                    date + time + curr_time
+        hash_md5 = hashlib.md5(bytes(hash_str, 'utf-8')).hexdigest()
+        attr['activity_id'] = uuid.UUID(hash_md5)
+        
+        add(Activities(**attr))
+        
+        
 def create_tables():
     """Ignores any conflicts with existing tables.
     Bear in mind any tables with the same name will not be made.
@@ -162,21 +234,21 @@ def get_col_names(table_class: Type[db.Model]) -> list[str]:
     with app.app_context():
         return table_class.__table__.columns.keys()
 
-# def login(net_id, pw):
-#     """Logs in a user with the requested username and password.
+def login(net_id, pw):
+    """Logs in a user with the requested username and password.
     
-#     :param net_id: NYU NetID used to login
-#     :type net_id: str
-#     :param pw: User password
-#     :type pw: pw
+    :param net_id: NYU NetID used to login
+    :type net_id: str
+    :param pw: User password
+    :type pw: pw
     
-#     :return: Token on successful authentication, None otherwise
-#     """
-#     user = get_with_attribute(Users, {"net_id": net_id, "password": pw})
-#     if user != None:
-#         True
+    :return: Token on successful authentication, None otherwise
+    """
+    user = get_with_attributes(Users, {"net_id": net_id, "password": pw})
+    if user != None:
+        return user[0].encode_auth_token(net_id)
     
-#     return None
+    return None
 
 def delete(table_class: Type[db.Model], pk: any, commit = True) -> db.Model:
     """Deletes model from its respective table via its primary key.
@@ -268,6 +340,7 @@ if __name__ == '__main__':
     app.config['SQLALCHEMY_DATABASE_URI'] = \
         'postgresql://postgres:opendoor@localhost:5432/postgres'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SECRET_KEY'] = "wzb9Sp@WCn!3t4Jy" #For login tokens
     db.init_app(app)
     
     test_db()

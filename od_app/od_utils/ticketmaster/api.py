@@ -54,7 +54,7 @@ def _parse_ticketmaster_events(url: str) -> List[dict]:
                 url=event["url"],
                 date=event["dates"]["start"]["localDate"],
                 time=event["dates"]["start"]["localTime"],
-                img_url=event["images"][0]["url"]  # get the url of the first image
+                img_url=event["images"][0]["url"],  # get the url of the first image
             )
             events.append(new_event)
 
