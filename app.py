@@ -1,7 +1,8 @@
 from flask import render_template, redirect, request, url_for
-from od_app.od_utils import db_utils
 from od_app import app, db
-from od_app.od_utils.ticketmaster import api
+from od_app.od_utils.ticketmaster import api as ticketmaster_api
+from od_app.od_utils.nyu_events import api as nyu_events_api
+from od_app.od_utils import db_utils
 
 def check_main_tabs():
     if request.form.get('my_profile') == 'My Profile':
@@ -107,5 +108,6 @@ if __name__ == '__main__':
     # db_utils.drop_all_tables()
     with app.app_context():
         db.create_all()
-        api.ticketmaster_api_to_activities_table()
+    nyu_events_api._load_to_nyu_events_table()
+    ticketmaster_api.ticketmaster_api_to_activities_table()
     app.run()

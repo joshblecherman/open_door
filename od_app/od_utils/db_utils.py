@@ -41,7 +41,7 @@ class Activities(db.Model):
     activity_id = db.Column(db.Uuid, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     place = db.Column(db.String(255))
-    description = db.Column(db.String(2000))
+    description = db.Column(db.String(5000))
     datetime = db.Column(db.DateTime, nullable=False)
     fee = db.Column(db.Integer)
     url = db.Column(db.String(255))
@@ -56,6 +56,18 @@ class StudentEvents(db.Model):
                    db.ForeignKey("activities.activity_id"),
                    primary_key=True)
     notes = db.Column(db.String(2000))
+
+class NYUEvents(db.Model):
+    __tablename__ = "nyu_events"
+    id = db.Column(db.String(50), primary_key=True)
+    title = db.Column(db.String(255))
+    url = db.Column(db.String(255))
+    date_time = db.Column(db.DateTime)
+    img_url = db.Column(db.String(255), nullable=True)
+    location = db.Column(db.String(255), nullable=True)
+    description = db.Column(db.String(5000), nullable=True)
+    fee = db.Column(db.Integer, nullable=True)
+
 
 class Ticketmaster(db.Model):
     __tablename__ = "ticketmaster"
@@ -84,13 +96,14 @@ def drop_all_tables():
     
     return: None
     """
-    tables = [Users, Ticketmaster, StudentEvents, Activities, Profiles]
+    tables = [Users, Ticketmaster, StudentEvents, Activities, Profiles, NYUEvents]
 
     with app.app_context():
         inspect = db.inspect(db.engine)
         for table in tables:
             if inspect.has_table(table.__tablename__):
                 table.__table__.drop(db.engine)
+        db.session.commit()
 
 def add(data: db.Model, commit=True, overwrite=False):
     """Inserts model into its respective table.
