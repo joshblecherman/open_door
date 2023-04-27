@@ -1,4 +1,4 @@
-from od_app.od_utils.api_utils.api_utils import get_json
+from od_utils.api_utils import get_json
 from typing import List
 
 URL = "https://data.cityofnewyork.us/resource/vjbm-hsyr.json"

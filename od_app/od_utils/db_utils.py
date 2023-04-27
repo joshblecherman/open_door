@@ -89,13 +89,6 @@ class Activities(db.Model):
     reservation_needed = db.Column(db.Boolean, nullable=False)
     source = db.Column(db.String(63), nullable=False)
     rsvp_list = db.Column(db.ARRAY(db.String(10)))
-class StudentEvents(db.Model):
-    __tablename__ = "student_events"
-    
-    id = db.Column(db.Uuid,
-                   db.ForeignKey("activities.activity_id"),
-                   primary_key=True)
-    notes = db.Column(db.String(2000))
 
 class NYUEvents(db.Model):
     __tablename__ = "nyu_events"

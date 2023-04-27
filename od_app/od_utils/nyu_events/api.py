@@ -1,7 +1,6 @@
-from od_app.od_utils.api_utils.api_utils import get_json
+from od_utils.api_utils import get_json
 import datetime
 from typing import List
-import json
 
 URL = "http://events.nyu.edu/live/json/events/"
 
@@ -50,3 +49,50 @@ def _load_to_nyu_events_table():
         record = NYUEvents(**p)
         with app.app_context():
             db_utils.add(data=record, commit=True)
+
+
+def _nyu_events_table_to_activities_table():
+    from od_app.od_utils import db_utils
+    from od_app.od_utils.db_utils import Activities
+    from od_app import app, db
+
+    # delete old nyu events
+    with app.app_context():
+        db.session.query(Activities).filter(Activities.source == "nyu_events").delete()
+        db.session.commit()
+
+    # load new nyu events
+    # insert new ones
+    db_utils.run_raw_sql(
+        """
+        INSERT INTO public.activities
+            (activity_id,
+             title,
+             place,
+             description,
+             datetime,
+             fee,
+             url,
+             img_url,
+             reservation_needed,
+             source,
+             rsvp_list)
+        SELECT Md5(n.id::varchar(20)) :: uuid,
+               n.title,
+               n.location,
+               n.description,
+               n.date_time,
+               NULL,
+               n.url,
+               n.img_url,
+               TRUE,
+               'nyu_events',
+               NULL
+        FROM   public.nyu_events n; 
+        """
+    )
+
+
+def nyu_events_api_to_activities_table():
+    _load_to_nyu_events_table()
+    _nyu_events_table_to_activities_table()
