@@ -1,7 +1,6 @@
 import datetime
 from typing import *
 
-
 API_SECRET = "J0zAFpB9xDbb9o4Y"  # not sure if it is needed for anything, but here just in case
 API_KEY = "eKRil5sqCyPFlHFxHTB7ubR4avgMG1pI"
 
@@ -28,7 +27,7 @@ def _get_response_pages(url: str) -> Iterator[dict]:
     :param response_json: events response json
     :return: iterator for pages in request
     """
-    from od_app.od_utils.api_utils.api_utils import get_json
+    from od_utils.api_utils import get_json
 
     curr_resp_json = get_json(url, 200)
     yield curr_resp_json
@@ -71,23 +70,52 @@ def _ticketmaster_api_to_ticketmaster_table():
     from od_app.od_utils.db_utils import Ticketmaster
     from od_app import app
 
-    db_utils.run_raw_sql("TRUNCATE TABLE Ticketmaster")  # delete all from table before loading
+    db_utils.run_raw_sql("TRUNCATE TABLE public.ticketmaster")  # delete all from table before loading
     payload = _get_ticketmaster_events()
 
     for p in payload:
         record = Ticketmaster(**p)
         with app.app_context():
-            db_utils.add(data=record, commit=True, overwrite=True)
+            db_utils.add(data=record, commit=True)
 
 
 def _ticketmaster_table_to_activities_table():
     from od_app.od_utils import db_utils
+    from od_app.od_utils.db_utils import Activities
+    from od_app import app, db
+
+    # clear old ticketmaster activities
+    with app.app_context():
+        db.session.query(Activities).filter(Activities.source == "ticketmaster").delete()
+        db.session.commit()
+
+    # insert new ones
     db_utils.run_raw_sql(
         """
-        INSERT INTO public.activities 
-        (activity_id, title, place, description, datetime, fee, url, img_url, reservation_needed, source, rsvp_list)
-        SELECT 
-        md5(t.id)::uuid, t.name, NULL, NULL, t.date + t.time, NULL, t.url, t.img_url, true, 'ticketmaster', NULL FROM public.ticketmaster t;
+        INSERT INTO public.activities
+            (activity_id,
+             title,
+             place,
+             description,
+             datetime,
+             fee,
+             url,
+             img_url,
+             reservation_needed,
+             source,
+             rsvp_list)
+        SELECT Md5(t.id) :: uuid,
+               t.name,
+               NULL,
+               NULL,
+               t.DATE + t.TIME,
+               NULL,
+               t.url,
+               t.img_url,
+               TRUE,
+               'ticketmaster',
+               NULL
+        FROM   public.ticketmaster t; 
         """
     )
 
