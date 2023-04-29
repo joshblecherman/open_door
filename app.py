@@ -3,8 +3,9 @@ from od_app import app, db
 import threading
 from od_app.od_utils import db_utils
 from od_app.od_utils.merging import activities_merge
+import re
 
-missingEventFields = False
+invalidEventFields = False
 
 
 def check_main_tabs():
@@ -75,8 +76,8 @@ def student_events_page():
         elif request.form.get("see_rsvp_list") == "See RSVP List":
             return redirect(url_for("rsvp_list_page"))
         elif request.form.get("New") == "New":
-            global missingEventFields
-            missingEventFields = False
+            global invalidEventFields
+            invalidEventFields = False
             return redirect(url_for("new_event_page"))
     else:
         events = db_utils.get_with_attributes(
@@ -88,7 +89,7 @@ def student_events_page():
 
 @app.route("/newevent", methods=["GET", "POST"])
 def new_event_page():
-    global missingEventFields
+    global invalidEventFields
     if request.method == "POST":
         if request.form.get("Create New Event") == "Create New Event":
             event = {
@@ -103,24 +104,42 @@ def new_event_page():
                 "reservation_needed": False,
             }
 
+            # Fill in the url field in case there is none
             if len(event["url"]) == 0:
                 event["url"] = "No URL"
 
+            # If any field is empty then don't save event
             for col in event:
                 if type(event[col]) != bool:
                     if len(event[col]) == 0:
-                        missingEventFields = True
+                        invalidEventFields = True
                         return redirect(url_for("new_event_page"))
 
+            date = event["date"][:]
+            time = event["time"][:]
+            date_regex = r"^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}$"
+            time_regex = r"^([1-9]|1[0-2]):[0-5][0-9]\s[AP][M]$"
+            fee = event["fee"]
+
+            # check if date, time, and fee are formated correctly
+            if (
+                (not re.match(date_regex, date))
+                or (not re.match(time_regex, time, re.IGNORECASE))
+                or (not (fee.isdigit()))
+            ):
+                invalidEventFields = True
+                return redirect(url_for("new_event_page"))
+
+            # Only after passing all those checks we store the event
             db_utils.StudentEvents(**event).add_to_activities()
 
         return redirect(
             url_for("student_events_page")
         )  # This will need to be changed to whatever the POST is
     else:
-        if missingEventFields:
+        if invalidEventFields:
             flash("Please fill in missing fields")
-            missingEventFields = False
+            invalidEventFields = False
         return render_template("new_event.html")
 
 
