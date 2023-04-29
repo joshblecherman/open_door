@@ -1,8 +1,10 @@
-from flask import render_template, redirect, request, url_for
+from flask import render_template, redirect, request, url_for, flash
 from od_app import app, db
 import threading
 from od_app.od_utils import db_utils
 from od_app.od_utils.merging import activities_merge
+
+missingEventFields = False
 
 
 def check_main_tabs():
@@ -73,6 +75,8 @@ def student_events_page():
         elif request.form.get("see_rsvp_list") == "See RSVP List":
             return redirect(url_for("rsvp_list_page"))
         elif request.form.get("New") == "New":
+            global missingEventFields
+            missingEventFields = False
             return redirect(url_for("new_event_page"))
     else:
         events = db_utils.get_with_attributes(
@@ -84,6 +88,7 @@ def student_events_page():
 
 @app.route("/newevent", methods=["GET", "POST"])
 def new_event_page():
+    global missingEventFields
     if request.method == "POST":
         if request.form.get("Create New Event") == "Create New Event":
             event = {
@@ -97,12 +102,25 @@ def new_event_page():
                 "url": request.form["url"],
                 "reservation_needed": False,
             }
+
+            if len(event["url"]) == 0:
+                event["url"] = "No URL"
+
+            for col in event:
+                if type(event[col]) != bool:
+                    if len(event[col]) == 0:
+                        missingEventFields = True
+                        return redirect(url_for("new_event_page"))
+
             db_utils.StudentEvents(**event).add_to_activities()
 
         return redirect(
             url_for("student_events_page")
         )  # This will need to be changed to whatever the POST is
     else:
+        if missingEventFields:
+            flash("Please fill in missing fields")
+            missingEventFields = False
         return render_template("new_event.html")
 
 

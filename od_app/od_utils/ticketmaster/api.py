@@ -1,7 +1,9 @@
 import datetime
 from typing import *
 
-API_SECRET = "J0zAFpB9xDbb9o4Y"  # not sure if it is needed for anything, but here just in case
+API_SECRET = (
+    "J0zAFpB9xDbb9o4Y"  # not sure if it is needed for anything, but here just in case
+)
 API_KEY = "eKRil5sqCyPFlHFxHTB7ubR4avgMG1pI"
 
 PAGE_SIZE = 50  # max number of results we get back per page, must be < 200
@@ -27,7 +29,7 @@ def _get_response_pages(url: str) -> Iterator[dict]:
     :param response_json: events response json
     :return: iterator for pages in request
     """
-    from od_utils.api_utils import get_json
+    from od_app.od_utils.api_utils import get_json
 
     curr_resp_json = get_json(url, 200)
     yield curr_resp_json
@@ -70,7 +72,9 @@ def _ticketmaster_api_to_ticketmaster_table():
     from od_app.od_utils.db_utils import Ticketmaster
     from od_app import app
 
-    db_utils.run_raw_sql("TRUNCATE TABLE public.ticketmaster")  # delete all from table before loading
+    db_utils.run_raw_sql(
+        "TRUNCATE TABLE public.ticketmaster"
+    )  # delete all from table before loading
     payload = _get_ticketmaster_events()
 
     for p in payload:
@@ -86,7 +90,9 @@ def _ticketmaster_table_to_activities_table():
 
     # clear old ticketmaster activities
     with app.app_context():
-        db.session.query(Activities).filter(Activities.source == "ticketmaster").delete()
+        db.session.query(Activities).filter(
+            Activities.source == "ticketmaster"
+        ).delete()
         db.session.commit()
 
     # insert new ones
@@ -123,4 +129,3 @@ def _ticketmaster_table_to_activities_table():
 def ticketmaster_api_to_activities_table():
     _ticketmaster_api_to_ticketmaster_table()
     _ticketmaster_table_to_activities_table()
-

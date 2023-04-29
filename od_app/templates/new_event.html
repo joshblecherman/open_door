@@ -18,6 +18,13 @@
             </div>
         </div>
         <div style="margin-top: 50px;">
+            {%with messages = get_flashed_messages()%}
+            {%if messages%}
+            {%for msg in messages%}
+            <p style="background-color: red;">{{msg}}</p>
+            {%endfor%}
+            {%endif%}
+            {%endwith%}
             <form class="p-3 py-5" action="#" method="post">
                 <div class="container rounded bg-white mt-5 mb-5">
                     <div class="row">
