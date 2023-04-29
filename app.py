@@ -75,7 +75,10 @@ def student_events_page():
         elif request.form.get("New") == "New":
             return redirect(url_for("new_event_page"))
     else:
-        return render_template("student_events.html", num_events=5)
+        events = db_utils.get_with_attributes(
+            db_utils.Activities, {"source": "student_events"}
+        )
+        return render_template("student_events.html", events=events)
 
 
 @app.route("/newevent", methods=["GET", "POST"])
