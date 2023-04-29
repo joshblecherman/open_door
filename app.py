@@ -1,7 +1,10 @@
 from flask import render_template, redirect, request, url_for
+
+import od_app.od_utils.db_utils
 from od_app import app, db
 import threading
-from od_app.od_utils.merging import activities_merge
+from od_app.od_utils.merging import activities_merge, spots_merge
+
 
 def check_main_tabs():
     if request.form.get('my_profile') == 'My Profile':
@@ -109,9 +112,17 @@ def rsvp_list_page():
 
 
 if __name__ == '__main__':
+    # od_app.od_utils.db_utils.drop_all_tables()
+    od_app.od_utils.db_utils.create_tables()
+
     # ------Activities Merge Thread------------
     activities_load = threading.Thread(target=activities_merge)
     activities_load.start()
+    # -----------------------------------------
+
+    # ------Spots Merge Thread-----------------
+    spots_load = threading.Thread(target=spots_merge)
+    spots_load.start()
     # -----------------------------------------
 
     app.run()
