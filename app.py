@@ -78,6 +78,7 @@ def student_events_page():
         events = db_utils.get_with_attributes(
             db_utils.Activities, {"source": "student_events"}
         )
+        events.reverse()
         return render_template("student_events.html", events=events)
 
 
