@@ -2,90 +2,82 @@
 {%block section%}Student Events{%endblock%}
 {%block content%}
 <div>
-  <form action="#" method="post" >
+  <form action="#" method="post">
     <div>
       <input type="submit" class="btn btn-primary purple-button btn-square-md new-button" name="New" value="New" />
     </div>
   </form>
-  {%for i in range(num_events)%}
-    <div class="row gx-5" style="border-bottom:5px ridge; margin-top:20px;">
-      <div class="col-md-6 mb-4">
-        <div class="bg-image hover-overlay ripple shadow-2-strong rounded-5" data-mdb-ripple-color="light" style="margin-top: 10px;">
-          <img src="https://mdbcdn.b-cdn.net/img/new/slides/080.webp" class="img-fluid rounded" />
-          <a href="#!">
-            <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
-          </a>
-        </div>
+  {%for event in events%}
+  <div class="row gx-5" style="border-bottom:5px ridge; margin-top:20px;">
+    <div class="col-md-6 mb-4">
+      <div class="bg-image hover-overlay ripple shadow-2-strong rounded-5" data-mdb-ripple-color="light"
+        style="margin-top: 10px;">
+        <img src="https://logos-world.net/wp-content/uploads/2021/09/NYU-Logo.png" class="img-fluid rounded" />
+        <a href="#!">
+          <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
+        </a>
       </div>
-    
-      <div class="col-md-6 mb-4">
-        <h4><strong>Hiking in the forest</strong></h4>
-        <div class="col-lg-8">
-          <div class="card mb-4">
-            <div class="card-body">
-              <div class="row">
-                <div class="col-sm-3">
-                  <p class="mb-0">Location</p>
-                </div>
-                <div class="col-sm-9">
-                  <p class="text-muted mb-0">The forest</p>
-                </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+      <h4><strong> {{event.title}} </strong></h4>
+      <div class="col-lg-8">
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Location</p>
               </div>
-              <hr>
-              <div class="row">
-                <div class="col-sm-3">
-                  <p class="mb-0">Date</p>
-                </div>
-                <div class="col-sm-9">
-                  <p class="text-muted mb-0">May 1st</p>
-                </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ event.place }}</p>
               </div>
-              <hr>
-              <div class="row">
-                <div class="col-sm-3">
-                  <p class="mb-0">Time</p>
-                </div>
-                <div class="col-sm-9">
-                  <p class="text-muted mb-0">10 AM</p>
-                </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Date & Time</p>
               </div>
-              <hr>
-              <div class="row">
-                <div class="col-sm-3">
-                  <p class="mb-0">Description</p>
-                </div>
-                <div class="col-sm-9">
-                  <p class="text-muted mb-0">These are the details</p>
-                </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ event.datetime }}</p>
               </div>
-              <hr>
-              <div class="row">
-                <div class="col-sm-3">
-                  <p class="mb-0">Fee</p>
-                </div>
-                <div class="col-sm-9">
-                  <p class="text-muted mb-0">No fee</p>
-                </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Description</p>
               </div>
-              <hr>
-              <div class="row">
-                <div class="col-sm-3">
-                  <p class="mb-0">URL</p>
-                </div>
-                <div class="col-sm-9">
-                  <p class="text-muted mb-0">TeamB42.com</p>
-                </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ event.description }}</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Fee</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ event.fee }}</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">URL</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ event.url }}</p>
               </div>
             </div>
           </div>
         </div>
-        <form action="#" method="post">
-          <input type="submit" class="btn btn-primary purple-button" value="RSVP" action="#" name="rsvp"/>
-          <input type="submit" class="btn btn-primary purple-button" value="See RSVP List" action="#" name="see_rsvp_list"/>
-        </form>
       </div>
+      <form action="#" method="post">
+        <input type="submit" class="btn btn-primary purple-button" value="RSVP" action="#" name="rsvp" />
+        <input type="submit" class="btn btn-primary purple-button" value="See RSVP List" action="#"
+          name="see_rsvp_list" />
+      </form>
     </div>
+  </div>
   {%endfor%}
 </div>
 {%endblock%}
-

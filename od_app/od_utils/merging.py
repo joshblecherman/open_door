@@ -8,7 +8,7 @@ import datetime
 def activities_merge():
     tl = Timeloop()
 
-    @tl.job(interval=datetime.timedelta(days=1))
+    @tl.job(interval=datetime.timedelta(minutes=3))
     def schedule():
         print("running ticketmaster load...")
         ticketmaster_api_to_activities_table()
