@@ -25,6 +25,14 @@ def check_main_tabs():
 
 
 @app.route("/", methods=["GET", "POST"])
+def login_page():
+    if request.method == "POST":
+        return redirect(url_for("home_page"))
+    else:
+        return render_template("login.html")
+
+
+@app.route("/home", methods=["GET", "POST"])
 def home_page():
     if request.method == "POST":
         tabs = check_main_tabs()
