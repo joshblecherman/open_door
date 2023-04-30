@@ -1,8 +1,8 @@
 from flask import render_template, redirect, request, url_for, flash
-from od_app import app, db
+from od_app import app
 import threading
 from od_app.od_utils import db_utils
-from od_app.od_utils.merging import activities_merge
+from od_app.od_utils.merging import activities_merge, spots_merge
 import re
 
 invalidEventFields = False
@@ -256,10 +256,17 @@ def rsvp_list_page():
 
 
 if __name__ == "__main__":
+    # db_utils.drop_all_tables()
+    # db_utils.create_tables()
+
     # ------Activities Merge Thread------------
     activities_load = threading.Thread(target=activities_merge)
     activities_load.start()
     # -----------------------------------------
-    # db_utils.drop_all_tables()
-    # db_utils.create_tables()
+
+    # ------Spots Merge Thread-----------------
+    spots_load = threading.Thread(target=spots_merge)
+    spots_load.start()
+    # -----------------------------------------
+
     app.run()

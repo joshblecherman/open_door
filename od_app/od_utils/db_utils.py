@@ -111,7 +111,6 @@ class Ticketmaster(db.Model):
     img_url = db.Column(db.String(255))
     url = db.Column(db.String(255), nullable=False)
 
-
 class StudentEvents(db.Model):
     __tablename__ = "student_events"
 
@@ -144,6 +143,24 @@ class StudentEvents(db.Model):
         add(Activities(**attr))
 
 
+class Spots(db.Model):
+    __tablename__ = "spots"
+    spot_id = db.Column(db.Uuid, primary_key=True)
+    name = db.Column(db.String(127), nullable=False)
+    place = db.Column(db.String(127), nullable=False)
+    description = db.Column(db.String(1024), nullable=True)
+    source = db.Column(db.String(63))
+
+
+class ParkTrails(db.Model):
+    __tablename__ = "park_trails"
+    trail_id = db.Column(db.Uuid, primary_key=True, nullable=False)
+    trail_name = db.Column(db.String(127), nullable=False)
+    park_name = db.Column(db.String(127), nullable=False)
+    surface = db.Column(db.String(127), nullable=True)
+    topography = db.Column(db.String(127), nullable=True)
+    difficulty = db.Column(db.String(127), nullable=True)
+
 def create_tables():
     """Ignores any conflicts with existing tables.
     Bear in mind any tables with the same name will not be made.
@@ -162,7 +179,7 @@ def drop_all_tables():
 
     return: None
     """
-    tables = [Users, Ticketmaster, StudentEvents, Activities, Profiles, NYUEvents]
+    tables = [Spots, ParkTrails]
 
     with app.app_context():
         inspect = db.inspect(db.engine)
