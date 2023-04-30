@@ -18,6 +18,13 @@
             </div>
         </div>
         <div style="margin-top: 50px;">
+            {%with messages = get_flashed_messages()%}
+            {%if messages%}
+            {%for msg in messages%}
+            <p style="background-color: red;">{{msg}}</p>
+            {%endfor%}
+            {%endif%}
+            {%endwith%}
             <section class="vh-100 gradient-custom" style="background-color: #D1A1EC;">
                 <form action="#" method="post">
                     <div class="container py-5 h-100">

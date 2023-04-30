@@ -8,6 +8,7 @@ import re
 invalidEventFields = False
 invalidSignUp = False
 invalidLogin = False
+userAlreadyExists = False
 
 
 def check_main_tabs():
@@ -29,6 +30,7 @@ def check_main_tabs():
 @app.route("/", methods=["GET", "POST"])
 def login_page():
     global invalidLogin
+
     if request.method == "POST":
         if request.form.get("Sign Up") == "Sign Up":
             return redirect(url_for("sign_up_page"))
@@ -42,7 +44,7 @@ def login_page():
 
             token = db_utils.login(netid, password)
 
-            if token == None:
+            if token is None:
                 invalidLogin = True
                 return redirect(url_for("login_page"))
 
@@ -60,6 +62,7 @@ def login_page():
 @app.route("/signup", methods=["GET", "POST"])
 def sign_up_page():
     global invalidSignUp
+    global userAlreadyExists
     if request.method == "POST":
         if request.form.get("Login") == "Login":
             return redirect(url_for("login_page"))
@@ -68,14 +71,17 @@ def sign_up_page():
             password = request.form["password"]
             repassword = request.form["repassword"]
 
-            token = db_utils.login(netid, password)
+            existing = db_utils.get_with_attributes(db_utils.Users, {"net_id": netid})
+
+            if len(existing) > 0:
+                userAlreadyExists = True
+                return redirect(url_for("sign_up_page"))
 
             if (
                 (password != repassword)
                 or (len(password) == 0)
                 or (len(repassword) == 0)
                 or (len(netid) == 0)
-                or (token != None)
             ):
                 invalidSignUp = True
                 return redirect(url_for("sign_up_page"))
@@ -96,6 +102,9 @@ def sign_up_page():
         if invalidSignUp:
             flash("Please double check Net id or password")
             invalidSignUp = False
+        if userAlreadyExists:
+            flash("User already exists, perhaps you meant to Login")
+            userAlreadyExists = False
         return render_template("sign_up.html")
 
 
@@ -260,13 +269,13 @@ if __name__ == "__main__":
     # db_utils.create_tables()
 
     # ------Activities Merge Thread------------
-    activities_load = threading.Thread(target=activities_merge)
-    activities_load.start()
-    # -----------------------------------------
+    # activities_load = threading.Thread(target=activities_merge)
+    # activities_load.start()
+    # # -----------------------------------------
 
-    # ------Spots Merge Thread-----------------
-    spots_load = threading.Thread(target=spots_merge)
-    spots_load.start()
+    # # ------Spots Merge Thread-----------------
+    # spots_load = threading.Thread(target=spots_merge)
+    # spots_load.start()
     # -----------------------------------------
 
     app.run()

@@ -111,6 +111,7 @@ class Ticketmaster(db.Model):
     img_url = db.Column(db.String(255))
     url = db.Column(db.String(255), nullable=False)
 
+
 class StudentEvents(db.Model):
     __tablename__ = "student_events"
 
@@ -161,6 +162,7 @@ class ParkTrails(db.Model):
     topography = db.Column(db.String(127), nullable=True)
     difficulty = db.Column(db.String(127), nullable=True)
 
+
 def create_tables():
     """Ignores any conflicts with existing tables.
     Bear in mind any tables with the same name will not be made.
@@ -179,7 +181,16 @@ def drop_all_tables():
 
     return: None
     """
-    tables = [Spots, ParkTrails]
+    tables = [
+        Spots,
+        ParkTrails,
+        Users,
+        StudentEvents,
+        Activities,
+        Profiles,
+        Ticketmaster,
+        NYUEvents,
+    ]
 
     with app.app_context():
         inspect = db.inspect(db.engine)
@@ -261,7 +272,7 @@ def login(net_id, pw):
     :return: Token on successful authentication, None otherwise
     """
     user = get_with_attributes(Users, {"net_id": net_id, "password": pw})
-    if user != None:
+    if (user is not None) and (len(user) != 0):
         return user[0].encode_auth_token(net_id)
 
     return None
