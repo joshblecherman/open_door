@@ -8,25 +8,36 @@
     <div>
       <!-- Featured image -->
       <div class="bg-image hover-overlay shadow-1-strong ripple rounded-5 mb-4" data-mdb-ripple-color="light">
-        <img src="https://www.centralpark.com/downloads/4154/download/walk.jpe?cb=783665e2e86dabe11fdbe675f24e26c4&w=720&h=" class="img-fluid" />
+        <img
+          src="https://www.centralpark.com/downloads/4154/download/walk.jpe?cb=783665e2e86dabe11fdbe675f24e26c4&w=720&h="
+          class="img-fluid" />
         <a href="#!">
           <div class="mask" style="background-color: rgba(251, 251, 251, 0.15);"></div>
         </a>
       </div>
-  
-      <!-- Article title and description -->
-      
-      <h5>{{ spot.name }}, {{ spot.place }}</h5>
-  
+
+
+      <h5>{{ spot.place }}</h5>
+
       <p>
-          {{ spot.description }}
+        {{ spot.name }}
       </p>
-      
-  
+
+
       <hr />
-  
+
+      <div class="row mb-4 border-bottom pb-2">
+        <div class="col-3">
+          <strong>Description:</strong>
+        </div>
+
+        <div class="col-9">
+          <p class="mb-2">{{ spot.description }}</p>
+        </div>
+      </div>
+
     </div>
-    <!-- News block -->
+
   </div>
   {%endfor%}
 </div>
