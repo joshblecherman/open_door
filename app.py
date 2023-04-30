@@ -1,14 +1,17 @@
-from flask import render_template, redirect, request, url_for, flash
+from flask import render_template, redirect, request, url_for, flash, session
 from od_app import app
 import threading
 from od_app.od_utils import db_utils
 from od_app.od_utils.merging import activities_merge, spots_merge
 import re
+from datetime import timedelta
 
 invalidEventFields = False
 invalidSignUp = False
 invalidLogin = False
 userAlreadyExists = False
+
+app.permanent_session_lifetime = timedelta(minutes=10)
 
 
 def check_main_tabs():
@@ -34,6 +37,7 @@ def login_page():
     if request.method == "POST":
         if request.form.get("Sign Up") == "Sign Up":
             return redirect(url_for("sign_up_page"))
+
         elif request.form.get("Login") == "Login":
             netid = request.form["netid"]
             password = request.form["password"]
@@ -49,10 +53,13 @@ def login_page():
                 return redirect(url_for("login_page"))
 
             # Only after passing all the previous tests, the login is succesful
-
+            session.permanent = True
+            session["net_id"] = netid
             return redirect(url_for("home_page"))
 
     else:
+        if "net_id" in session:
+            return redirect(url_for("home_page"))
         if invalidLogin:
             flash("Please double check Net id or password")
             invalidLogin = False
@@ -96,9 +103,13 @@ def sign_up_page():
 
             db_utils.add(db_utils.Profiles(**profile))
             db_utils.add(db_utils.Users(**newUser))
+            session.permanent = True
+            session["net_id"] = netid
             return redirect(url_for("home_page"))
 
     else:
+        if "net_id" in session:
+            return redirect(url_for("home_page"))
         if invalidSignUp:
             flash("Please double check Net id or password")
             invalidSignUp = False
@@ -115,6 +126,8 @@ def home_page():
         if tabs:
             return redirect(url_for(tabs))
     else:
+        if not ("net_id" in session):
+            return redirect(url_for("login_page"))
         return render_template("home.html")
 
 
@@ -126,7 +139,12 @@ def profile_page():
             return redirect(url_for(tabs))
         elif request.form.get("Edit") == "Edit":
             return redirect(url_for("edit_profile_page"))
+        elif request.form.get("Log out") == "Log out":
+            session.pop("net_id", None)
+            return redirect(url_for("login_page"))
     else:
+        if not ("net_id" in session):
+            return redirect(url_for("login_page"))
         return render_template(
             "profile.html",
             preferred_name="B42",
@@ -148,6 +166,8 @@ def edit_profile_page():
             # Here is where all the backend for storing new profile data should go
             return redirect(url_for("profile_page"))
     else:
+        if not ("net_id" in session):
+            return redirect(url_for("login_page"))
         return render_template("profile_form.html")
 
 
@@ -164,6 +184,8 @@ def student_events_page():
             invalidEventFields = False
             return redirect(url_for("new_event_page"))
     else:
+        if not ("net_id" in session):
+            return redirect(url_for("login_page"))
         events = db_utils.get_with_attributes(
             db_utils.Activities, {"source": "student_events"}
         )
@@ -220,6 +242,9 @@ def new_event_page():
             url_for("student_events_page")
         )  # This will need to be changed to whatever the POST is
     else:
+        if not ("net_id" in session):
+            return redirect(url_for("login_page"))
+
         if invalidEventFields:
             flash("Please fill in missing fields")
             invalidEventFields = False
@@ -233,6 +258,9 @@ def fun_spots_page():
         if tabs:
             return redirect(url_for(tabs))
     else:
+        if not ("net_id" in session):
+            return redirect(url_for("login_page"))
+
         spots = db_utils.get_with_attributes(db_utils.Spots)
         return render_template("fun_spots.html", spots=spots)
 
@@ -244,6 +272,9 @@ def happening_in_nyc_page():
         if tabs:
             return redirect(url_for(tabs))
     else:
+        if not ("net_id" in session):
+            return redirect(url_for("login_page"))
+
         return render_template("happening_in_nyc.html")
 
 
@@ -253,6 +284,9 @@ def rsvp_list_page():
         if request.form.get("Back") == "Back":
             return redirect(url_for("student_events_page"))
     else:
+        if not ("net_id" in session):
+            return redirect(url_for("login_page"))
+
         return render_template(
             "rsvp_list.html",
             event_name="The Hike",
