@@ -81,7 +81,7 @@ def _park_trails_table_to_spots_table():
         SELECT p.trail_id,
                p.trail_name,
                p.park_name,
-               CONCAT_WS('</p><p>', '<p>' || p.surface, p.topography, p.difficulty || '</p>'),
+               CONCAT_WS(', ',p.surface, p.topography, p.difficulty),
                'park_trails'
         FROM   public.park_trails p; 
         """

@@ -233,7 +233,8 @@ def fun_spots_page():
         if tabs:
             return redirect(url_for(tabs))
     else:
-        return render_template("fun_spots.html", num_spots=4)
+        spots = db_utils.get_with_attributes(db_utils.Spots)
+        return render_template("fun_spots.html", spots=spots)
 
 
 @app.route("/happeninginnyc", methods=["GET", "POST"])
@@ -269,13 +270,13 @@ if __name__ == "__main__":
     # db_utils.create_tables()
 
     # ------Activities Merge Thread------------
-    # activities_load = threading.Thread(target=activities_merge)
-    # activities_load.start()
-    # # -----------------------------------------
+    activities_load = threading.Thread(target=activities_merge)
+    activities_load.start()
+    # -----------------------------------------
 
-    # # ------Spots Merge Thread-----------------
-    # spots_load = threading.Thread(target=spots_merge)
-    # spots_load.start()
+    # ------Spots Merge Thread-----------------
+    spots_load = threading.Thread(target=spots_merge)
+    spots_load.start()
     # -----------------------------------------
 
     app.run()

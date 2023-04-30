@@ -22,7 +22,7 @@ def activities_merge():
 def spots_merge():
     tl = Timeloop()
 
-    @tl.job(interval=datetime.timedelta(days=7))
+    @tl.job(interval=datetime.timedelta(minutes=1))
     def schedule():
         print("running park_trails load...")
         park_trails_api_to_spots_table()
