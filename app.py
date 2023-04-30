@@ -6,6 +6,8 @@ from od_app.od_utils.merging import activities_merge
 import re
 
 invalidEventFields = False
+invalidSignUp = False
+invalidLogin = False
 
 
 def check_main_tabs():
@@ -26,10 +28,75 @@ def check_main_tabs():
 
 @app.route("/", methods=["GET", "POST"])
 def login_page():
+    global invalidLogin
     if request.method == "POST":
-        return redirect(url_for("home_page"))
+        if request.form.get("Sign Up") == "Sign Up":
+            return redirect(url_for("sign_up_page"))
+        elif request.form.get("Login") == "Login":
+            netid = request.form["netid"]
+            password = request.form["password"]
+
+            if (len(netid) == 0) or (len(password) == 0):
+                invalidLogin = True
+                return redirect(url_for("login_page"))
+
+            token = db_utils.login(netid, password)
+
+            if token == None:
+                invalidLogin = True
+                return redirect(url_for("login_page"))
+
+            # Only after passing all the previous tests, the login is succesful
+
+            return redirect(url_for("home_page"))
+
     else:
+        if invalidLogin:
+            flash("Please double check Net id or password")
+            invalidLogin = False
         return render_template("login.html")
+
+
+@app.route("/signup", methods=["GET", "POST"])
+def sign_up_page():
+    global invalidSignUp
+    if request.method == "POST":
+        if request.form.get("Login") == "Login":
+            return redirect(url_for("login_page"))
+        elif request.form.get("Sign Up") == "Sign Up":
+            netid = request.form["netid"].lower()
+            password = request.form["password"]
+            repassword = request.form["repassword"]
+
+            token = db_utils.login(netid, password)
+
+            if (
+                (password != repassword)
+                or (len(password) == 0)
+                or (len(repassword) == 0)
+                or (len(netid) == 0)
+                or (token != None)
+            ):
+                invalidSignUp = True
+                return redirect(url_for("sign_up_page"))
+
+            profile = {
+                "net_id": netid,
+                "first_name": "Please add your first name",
+                "last_name": "Please add your last name",
+            }
+
+            newUser = {"net_id": netid, "password": password, "profile": netid}
+
+            db_utils.add(db_utils.Profiles(**profile))
+            db_utils.add(db_utils.Users(**newUser))
+            return redirect(url_for("home_page"))
+
+    else:
+        if invalidSignUp:
+            flash("Please double check Net id or password")
+            invalidSignUp = False
+        return render_template("sign_up.html")
 
 
 @app.route("/home", methods=["GET", "POST"])
@@ -105,9 +172,9 @@ def new_event_page():
                 "title": request.form["title"],
                 "place": request.form["location"],
                 "description": request.form["description"],
-                "date": request.form["date"],
-                "time": request.form["time"],
-                "fee": request.form["fee"],
+                "date": request.form["date"].strip(),
+                "time": request.form["time"].strip(),
+                "fee": request.form["fee"].strip(),
                 "url": request.form["url"],
                 "reservation_needed": False,
             }
@@ -126,14 +193,13 @@ def new_event_page():
             date = event["date"][:]
             time = event["time"][:]
             date_regex = r"^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}$"
-            time_regex = r"^([1-9]|1[0-2]):[0-5][0-9]\s[AP][M]$"
+            time_regex = r"((1[0-2]|0?[1-9]):([0-5][0-9]) ?([AaPp][Mm]))"
             fee = event["fee"]
 
-            # check if date, time, and fee are formated correctly
             if (
                 (not re.match(date_regex, date))
-                or (not re.match(time_regex, time, re.IGNORECASE))
-                or (not (fee.isdigit()))
+                or (not re.match(time_regex, time))
+                or (not fee.isdigit())
             ):
                 invalidEventFields = True
                 return redirect(url_for("new_event_page"))
