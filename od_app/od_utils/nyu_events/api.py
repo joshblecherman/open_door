@@ -1,4 +1,4 @@
-from od_utils.api_utils import get_json
+from od_app.od_utils.api_utils import get_json
 import datetime
 from typing import List
 
@@ -7,7 +7,8 @@ URL = "http://events.nyu.edu/live/json/events/"
 
 def utc_to_est(utc_time: str, date_format: str):
     import pytz
-    est = pytz.timezone('US/Eastern')
+
+    est = pytz.timezone("US/Eastern")
     eastern_time = datetime.datetime.strptime(utc_time, date_format).replace(tzinfo=est)
     return eastern_time.strftime(date_format)
 
@@ -18,7 +19,6 @@ def _parse_nyu_events() -> List[dict]:
     events = list()
     dupes = list()
     for event in nyu_events:
-
         # dont retrieve non MYC campus events
         # Example: events.shanghai.nyu.edu
         if "events.nyu.edu" in event["url"] and event["id"] not in dupes:
@@ -29,7 +29,7 @@ def _parse_nyu_events() -> List[dict]:
                 date_time=utc_to_est(event["date_utc"], "%Y-%m-%d %H:%M:%S"),
                 img_url=event["thumbnail"],
                 location=event.get("location"),  # .get() returns None if key DNE
-                description=event.get("description")
+                description=event.get("description"),
             )
             events.append(new_event)
             dupes.append(new_event["id"])
@@ -42,7 +42,9 @@ def _load_to_nyu_events_table():
     from od_app.od_utils.db_utils import NYUEvents
     from od_app import app
 
-    db_utils.run_raw_sql("TRUNCATE TABLE public.nyu_events")  # delete all from table before loading
+    db_utils.run_raw_sql(
+        "TRUNCATE TABLE public.nyu_events"
+    )  # delete all from table before loading
     payload = _parse_nyu_events()
 
     for p in payload:
