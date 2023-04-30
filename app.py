@@ -145,16 +145,13 @@ def profile_page():
     else:
         if not ("net_id" in session):
             return redirect(url_for("login_page"))
-        return render_template(
-            "profile.html",
-            preferred_name="B42",
-            major="Computer Science",
-            dorm="Off-campus",
-            full_name="Team B42",
-            email="teamB42@teamB42.com",
-            phone="(097) 234-5678",
-            about_me="We are just CS students trying to graduate",
+
+        currentProfile = db_utils.get_with_attributes(
+            db_utils.Profiles, {"net_id": session["net_id"]}
         )
+        currentProfile = currentProfile[0]
+
+        return render_template("profile.html", profile=currentProfile)
 
 
 @app.route("/editprofile", methods=["GET", "POST"])
