@@ -4,11 +4,14 @@ import threading
 from od_app.od_utils import db_utils
 from od_app.od_utils.merging import activities_merge, spots_merge
 import re
+from datetime import timedelta
 
 invalidEventFields = False
 invalidSignUp = False
 invalidLogin = False
 userAlreadyExists = False
+
+app.permanent_session_lifetime = timedelta(minutes=10)
 
 
 def check_main_tabs():
@@ -34,6 +37,7 @@ def login_page():
     if request.method == "POST":
         if request.form.get("Sign Up") == "Sign Up":
             return redirect(url_for("sign_up_page"))
+
         elif request.form.get("Login") == "Login":
             netid = request.form["netid"]
             password = request.form["password"]
@@ -49,10 +53,13 @@ def login_page():
                 return redirect(url_for("login_page"))
 
             # Only after passing all the previous tests, the login is succesful
+            session.permanent = True
             session["net_id"] = netid
             return redirect(url_for("home_page"))
 
     else:
+        if "net_id" in session:
+            return redirect(url_for("home_page"))
         if invalidLogin:
             flash("Please double check Net id or password")
             invalidLogin = False
@@ -96,10 +103,13 @@ def sign_up_page():
 
             db_utils.add(db_utils.Profiles(**profile))
             db_utils.add(db_utils.Users(**newUser))
+            session.permanent = True
             session["net_id"] = netid
             return redirect(url_for("home_page"))
 
     else:
+        if "net_id" in session:
+            return redirect(url_for("home_page"))
         if invalidSignUp:
             flash("Please double check Net id or password")
             invalidSignUp = False
