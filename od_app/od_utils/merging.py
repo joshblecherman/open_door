@@ -8,7 +8,7 @@ import datetime
 def activities_merge():
     tl = Timeloop()
 
-    @tl.job(interval=datetime.timedelta(minutes=3))
+    @tl.job(interval=datetime.timedelta(days=1))
     def schedule():
         print("running ticketmaster load...")
         ticketmaster_api_to_activities_table()
@@ -22,7 +22,7 @@ def activities_merge():
 def spots_merge():
     tl = Timeloop()
 
-    @tl.job(interval=datetime.timedelta(minutes=1))
+    @tl.job(interval=datetime.timedelta(days=7))
     def schedule():
         print("running park_trails load...")
         park_trails_api_to_spots_table()
