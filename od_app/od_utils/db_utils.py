@@ -30,6 +30,8 @@ class Profiles(db.Model):
     dorm = db.Column(db.String(50))
     major = db.Column(db.String(50))
     description = db.Column(db.String(2000))
+    contact_info = db.Column(db.String(2000))
+    img_url = db.Column(db.String(2000))
 
 
 class Users(db.Model):
@@ -260,6 +262,30 @@ def get_col_names(table_class: Type[db.Model]) -> list[str]:
     with app.app_context():
         return table_class.__table__.columns.keys()
 
+def update(data: db.Model, attr: dict()):
+    """Modifies the data model with the given attributes
+
+    :param data: SQLAlchemy object to be inserted
+    :param attr: Dictionary of columns to change.
+
+    :return: Modified user object if found, None otherwise."""
+    
+    with app.app_context():
+        for key, val in attr:
+            setattr(data, key, val)
+        add(data, overwrite = True)
+        return data
+
+def update_with_pk(table_class: Type[db.Model], pk: any, attr: dict()):
+    """Modifies the row with the given pk
+
+    :param table_class: SQLAlchemy class to get data from
+    :param pk: Primary key used to find desired row.
+    :param attr: Dictionary of columns to change.
+
+    :return: Modified user object if found, None otherwise."""
+    row = get_with_pk(table_class, pk)
+    return update(row, attr)
 
 def login(net_id, pw):
     """Logs in a user with the requested username and password.

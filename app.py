@@ -313,7 +313,21 @@ def happening_in_nyc_page():
         if not ("net_id" in session):
             return redirect(url_for("login_page"))
 
-        return render_template("happening_in_nyc.html")
+        # I am not using get_with_attributes here because I really want to limit All Star Standup Comedy rows
+        activities = db_utils.run_raw_sql(
+            """
+            (SELECT *
+            FROM public.activities
+            WHERE title = 'All Star Stand Up Comedy'
+            LIMIT 10)
+            UNION ALL
+            (SELECT *
+            FROM public.activities
+            WHERE title != 'All Star Stand Up Comedy');
+            """,
+            get_output=True,
+        )
+        return render_template("happening_in_nyc.html", activities=activities)
 
 
 @app.route("/rsvplist", methods=["GET", "POST"])
@@ -342,4 +356,5 @@ if __name__ == "__main__":
     spots_load.start()
     # -----------------------------------------
 
-    app.run()
+    # Sometimes when I get accessed denied it helps to change the port number
+    app.run(host="localhost", port=5000)
