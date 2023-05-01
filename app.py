@@ -150,7 +150,9 @@ def profile_page():
         currentProfile = db_utils.get_with_attributes(
             db_utils.Profiles, {"net_id": session["net_id"]}
         )
-        currentProfile = currentProfile[0]
+
+        if len(currentProfile) > 0:
+            currentProfile = currentProfile[0]
 
         return render_template("profile.html", profile=currentProfile)
 
@@ -162,6 +164,65 @@ def edit_profile_page():
             return redirect(url_for("profile_page"))
         elif request.form.get("Save Profile") == "Save Profile":
             # Here is where all the backend for storing new profile data should go
+
+            currUser = db_utils.get_with_attributes(
+                db_utils.Profiles, {"net_id": session["net_id"]}
+            )
+
+            currUser = currUser[0]
+
+            if len(request.form["First Name"]) > 0:
+                firstName = request.form["First Name"]
+            else:
+                firstName = currUser.first_name
+
+            if len(request.form["Last Name"]) > 0:
+                lastName = request.form["Last Name"]
+            else:
+                lastName = currUser.last_name
+
+            if len(request.form["Preferred Name"]) > 0:
+                preferredName = request.form["Preferred Name"]
+            else:
+                preferredName = currUser.preferred_name
+
+            if len(request.form["Contact Info"]) > 0:
+                contactInfo = request.form["Contact Info"]
+            else:
+                contactInfo = currUser.contact_info
+
+            if len(request.form["Dorm"]) > 0:
+                dorm = request.form["Dorm"]
+            else:
+                dorm = currUser.dorm
+
+            if len(request.form["Description"]) > 0:
+                description = request.form["Description"]
+            else:
+                description = currUser.description
+
+            if len(request.form["Major"]) > 0:
+                major = request.form["Major"]
+            else:
+                major = currUser.major
+
+            upDated = {
+                "net_id": session["net_id"],
+                "first_name": firstName,
+                "preferred_name": preferredName,
+                "middle_name": currUser.middle_name,
+                "last_name": lastName,
+                "dorm": dorm,
+                "major": major,
+                "description": description,
+                "contact_info": contactInfo,
+                "img_url": currUser.img_url,
+            }
+
+            rsvpUsers = []
+
+            db_utils.add(db_utils.Profiles(**upDated), overwrite=True)
+
             return redirect(url_for("profile_page"))
     else:
         if not ("net_id" in session):
