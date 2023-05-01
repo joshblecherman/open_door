@@ -85,10 +85,10 @@ def sign_up_page():
                 return redirect(url_for("sign_up_page"))
 
             if (
-                (password != repassword)
-                or (len(password) == 0)
-                or (len(repassword) == 0)
-                or (len(netid) == 0)
+                    (password != repassword)
+                    or (len(password) == 0)
+                    or (len(repassword) == 0)
+                    or (len(netid) == 0)
             ):
                 invalidSignUp = True
                 return redirect(url_for("sign_up_page"))
@@ -228,9 +228,9 @@ def new_event_page():
             fee = event["fee"]
 
             if (
-                (not re.match(date_regex, date))
-                or (not re.match(time_regex, time))
-                or (not fee.isdigit())
+                    (not re.match(date_regex, date))
+                    or (not re.match(time_regex, time))
+                    or (not fee.isdigit())
             ):
                 invalidEventFields = True
                 return redirect(url_for("new_event_page"))
@@ -275,7 +275,20 @@ def happening_in_nyc_page():
         if not ("net_id" in session):
             return redirect(url_for("login_page"))
 
-        return render_template("happening_in_nyc.html")
+        # I am not using get_with_attributes here because I really want to limit All Star Standup Comedy rows
+        activities = db_utils.run_raw_sql(
+            """
+            (SELECT *
+            FROM public.activities
+            WHERE title = 'All Star Stand Up Comedy'
+            LIMIT 10)
+            UNION ALL
+            (SELECT *
+            FROM public.activities
+            WHERE title != 'All Star Stand Up Comedy');
+            """,
+            get_output=True)
+        return render_template("happening_in_nyc.html", activities=activities)
 
 
 @app.route("/rsvplist", methods=["GET", "POST"])
@@ -313,4 +326,5 @@ if __name__ == "__main__":
     spots_load.start()
     # -----------------------------------------
 
-    app.run()
+    # Sometimes when I get accessed denied it helps to change the port number
+    app.run(host="localhost", port=5000)
