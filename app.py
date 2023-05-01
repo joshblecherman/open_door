@@ -10,6 +10,7 @@ invalidEventFields = False
 invalidSignUp = False
 invalidLogin = False
 userAlreadyExists = False
+rsvpUsers = []
 
 app.permanent_session_lifetime = timedelta(minutes=10)
 
@@ -85,10 +86,10 @@ def sign_up_page():
                 return redirect(url_for("sign_up_page"))
 
             if (
-                    (password != repassword)
-                    or (len(password) == 0)
-                    or (len(repassword) == 0)
-                    or (len(netid) == 0)
+                (password != repassword)
+                or (len(password) == 0)
+                or (len(repassword) == 0)
+                or (len(netid) == 0)
             ):
                 invalidSignUp = True
                 return redirect(url_for("sign_up_page"))
@@ -145,16 +146,15 @@ def profile_page():
     else:
         if not ("net_id" in session):
             return redirect(url_for("login_page"))
-        return render_template(
-            "profile.html",
-            preferred_name="B42",
-            major="Computer Science",
-            dorm="Off-campus",
-            full_name="Team B42",
-            email="teamB42@teamB42.com",
-            phone="(097) 234-5678",
-            about_me="We are just CS students trying to graduate",
+
+        currentProfile = db_utils.get_with_attributes(
+            db_utils.Profiles, {"net_id": session["net_id"]}
         )
+
+        if len(currentProfile) > 0:
+            currentProfile = currentProfile[0]
+
+        return render_template("profile.html", profile=currentProfile)
 
 
 @app.route("/editprofile", methods=["GET", "POST"])
@@ -164,6 +164,65 @@ def edit_profile_page():
             return redirect(url_for("profile_page"))
         elif request.form.get("Save Profile") == "Save Profile":
             # Here is where all the backend for storing new profile data should go
+
+            currUser = db_utils.get_with_attributes(
+                db_utils.Profiles, {"net_id": session["net_id"]}
+            )
+
+            currUser = currUser[0]
+
+            if len(request.form["First Name"]) > 0:
+                firstName = request.form["First Name"]
+            else:
+                firstName = currUser.first_name
+
+            if len(request.form["Last Name"]) > 0:
+                lastName = request.form["Last Name"]
+            else:
+                lastName = currUser.last_name
+
+            if len(request.form["Preferred Name"]) > 0:
+                preferredName = request.form["Preferred Name"]
+            else:
+                preferredName = currUser.preferred_name
+
+            if len(request.form["Contact Info"]) > 0:
+                contactInfo = request.form["Contact Info"]
+            else:
+                contactInfo = currUser.contact_info
+
+            if len(request.form["Dorm"]) > 0:
+                dorm = request.form["Dorm"]
+            else:
+                dorm = currUser.dorm
+
+            if len(request.form["Description"]) > 0:
+                description = request.form["Description"]
+            else:
+                description = currUser.description
+
+            if len(request.form["Major"]) > 0:
+                major = request.form["Major"]
+            else:
+                major = currUser.major
+
+            upDated = {
+                "net_id": session["net_id"],
+                "first_name": firstName,
+                "preferred_name": preferredName,
+                "middle_name": currUser.middle_name,
+                "last_name": lastName,
+                "dorm": dorm,
+                "major": major,
+                "description": description,
+                "contact_info": contactInfo,
+                "img_url": currUser.img_url,
+            }
+
+            rsvpUsers = []
+
+            db_utils.add(db_utils.Profiles(**upDated), overwrite=True)
+
             return redirect(url_for("profile_page"))
     else:
         if not ("net_id" in session):
@@ -173,16 +232,56 @@ def edit_profile_page():
 
 @app.route("/studentevents", methods=["GET", "POST"])
 def student_events_page():
+    global rsvpUsers
     if request.method == "POST":
         tabs = check_main_tabs()
         if tabs:
             return redirect(url_for(tabs))
-        elif request.form.get("see_rsvp_list") == "See RSVP List":
-            return redirect(url_for("rsvp_list_page"))
+
         elif request.form.get("New") == "New":
             global invalidEventFields
             invalidEventFields = False
             return redirect(url_for("new_event_page"))
+
+        if not (request.form.get("rsvp") is None):
+            activity_id = request.form.get("rsvp")
+            activity = db_utils.get_with_attributes(
+                db_utils.Activities, {"activity_id": activity_id}
+            )
+            activity = activity[0]
+
+            rsvp_list = activity.rsvp_list
+            if type(rsvp_list) == list:
+                if session["net_id"] not in rsvp_list:
+                    rsvp_list.append(session["net_id"])
+            else:
+                rsvp_list = [session["net_id"]]
+
+            upDated = {
+                "activity_id": activity_id,
+                "title": activity.title,
+                "place": activity.place,
+                "description": activity.description,
+                "datetime": activity.datetime,
+                "fee": activity.fee,
+                "url": activity.url,
+                "img_url": activity.img_url,
+                "reservation_needed": activity.reservation_needed,
+                "source": activity.source,
+                "rsvp_list": rsvp_list,
+            }
+
+            rsvpUsers = []
+
+            for id in rsvp_list:
+                user = db_utils.get_with_attributes(db_utils.Profiles, {"net_id": id})
+                user = user[0]
+                rsvpUsers.append(user)
+
+            db_utils.add(db_utils.Activities(**upDated), overwrite=True)
+
+            return redirect(url_for("rsvp_list_page"))
+
     else:
         if not ("net_id" in session):
             return redirect(url_for("login_page"))
@@ -199,7 +298,7 @@ def new_event_page():
     if request.method == "POST":
         if request.form.get("Create New Event") == "Create New Event":
             event = {
-                "net_id": "JuanSupremacy",
+                "net_id": session["net_id"],
                 "title": request.form["title"],
                 "place": request.form["location"],
                 "description": request.form["description"],
@@ -228,9 +327,9 @@ def new_event_page():
             fee = event["fee"]
 
             if (
-                    (not re.match(date_regex, date))
-                    or (not re.match(time_regex, time))
-                    or (not fee.isdigit())
+                (not re.match(date_regex, date))
+                or (not re.match(time_regex, time))
+                or (not fee.isdigit())
             ):
                 invalidEventFields = True
                 return redirect(url_for("new_event_page"))
@@ -287,7 +386,8 @@ def happening_in_nyc_page():
             FROM public.activities
             WHERE title != 'All Star Stand Up Comedy');
             """,
-            get_output=True)
+            get_output=True,
+        )
         return render_template("happening_in_nyc.html", activities=activities)
 
 
@@ -300,16 +400,7 @@ def rsvp_list_page():
         if not ("net_id" in session):
             return redirect(url_for("login_page"))
 
-        return render_template(
-            "rsvp_list.html",
-            event_name="The Hike",
-            preferred_name="B42",
-            major="Computer Science",
-            dorm="Off-campus",
-            full_name="Team B42",
-            email="teamB42@teamB42.com",
-            phone="(097) 234-5678",
-        )
+        return render_template("rsvp_list.html", attendees=rsvpUsers)
 
 
 if __name__ == "__main__":

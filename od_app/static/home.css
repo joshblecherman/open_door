@@ -41,14 +41,14 @@
   justify-content: center;
   align-items: center;
   margin: 0 10px;
-  
+
 }
 
-.home-button:hover{
+.home-button:hover {
   background-color: #6d0dbb;
 }
 
-.welcome-container{
+.welcome-container {
   background-color: #8b0ef3;
 
   position: relative;
@@ -61,27 +61,27 @@
 
 }
 
-.welcome-title{
+.welcome-title {
   color: #ffffff;
   font-family: sans-serif;
   text-align: center;
 }
 
-.welcome-message{
+.welcome-message {
   color: #ffffff;
   font-family: sans-serif;
 }
 
 /* CSS IDs are meant to be only for one particular element. The # means it is an id and not a class */
-.purple-button{
+.purple-button {
   background-color: #8b0ef3;
 }
 
-.purple-button:hover{
+.purple-button:hover {
   background-color: #6d0dbb;
 }
 
-.top-bar{
+.top-bar {
   position: sticky;
   top: 0;
   z-index: 9999;

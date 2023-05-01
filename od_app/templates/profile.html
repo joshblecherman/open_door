@@ -12,9 +12,21 @@
             <div class="card-body text-center">
               <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
                 class="rounded-circle img-fluid" style="width: 150px;">
-              <h5 class="my-3">{{preferred_name}}</h5>
-              <p class="text-muted mb-1">{{major}}</p>
-              <p class="text-muted mb-4">{{dorm}}</p>
+              {%if profile.preferred_name == None%}
+              <h5 class="my-3">Please add your preferred name</h5>
+              {%else%}
+              <h5 class="my-3">{{profile.preferred_name}}</h5>
+              {%endif%}
+              {%if profile.major == None%}
+              <h5 class="my-3">Please add your major</h5>
+              {%else%}
+              <p class="text-muted mb-1">{{profile.major}}</p>
+              {%endif%}
+              {%if profile.dorm == None%}
+              <p class="text-muted mb-4">Please add your dorm</p>
+              {%else%}
+              <p class="text-muted mb-4">{{profile.dorm}}</p>
+              {%endif%}
               <form class="d-flex justify-content-center mb-2" action="#" method="post">
                 <input type="submit" class="btn btn-primary purple-button" value="Edit" name="Edit" />
                 <input type="submit" class="btn btn-primary purple-button" style="margin-left: 10px;" value="Log out"
@@ -31,25 +43,16 @@
                   <p class="mb-0">Full Name</p>
                 </div>
                 <div class="col-sm-9">
-                  <p class="text-muted mb-0">{{full_name}}</p>
+                  <p class="text-muted mb-0">{{profile.first_name}} {{profile.last_name}}</p>
                 </div>
               </div>
               <hr>
               <div class="row">
                 <div class="col-sm-3">
-                  <p class="mb-0">Email</p>
+                  <p class="mb-0">Net id</p>
                 </div>
                 <div class="col-sm-9">
-                  <p class="text-muted mb-0">{{email}}</p>
-                </div>
-              </div>
-              <hr>
-              <div class="row">
-                <div class="col-sm-3">
-                  <p class="mb-0">Phone</p>
-                </div>
-                <div class="col-sm-9">
-                  <p class="text-muted mb-0">{{phone}}</p>
+                  <p class="text-muted mb-0">{{profile.net_id}}</p>
                 </div>
               </div>
               <hr>
@@ -58,16 +61,39 @@
                   <p class="mb-0">Dorm</p>
                 </div>
                 <div class="col-sm-9">
-                  <p class="text-muted mb-0">{{dorm}}</p>
+                  {%if profile.dorm == None%}
+                  <p class="text-muted mb-0">Please add your dorm</p>
+                  {%else%}
+                  <p class="text-muted mb-0">{{profile.dorm}}</p>
+                  {%endif%}
                 </div>
               </div>
+
+              <hr>
+              <div class="row">
+                <div class="col-sm-3">
+                  <p class="mb-0">Contact Info</p>
+                </div>
+                <div class="col-sm-9">
+                  {%if profile.contact_info == None%}
+                  <p class="text-muted mb-0">Please add your contact Info</p>
+                  {%else%}
+                  <p class="text-muted mb-0">{{profile.contact_info}}</p>
+                  {%endif%}
+                </div>
+              </div>
+
               <hr>
               <div class="row">
                 <div class="col-sm-3">
                   <p class="mb-0">About Me</p>
                 </div>
                 <div class="col-sm-9">
-                  <p class="text-muted mb-0">{{about_me}}</p>
+                  {%if profile.description == None%}
+                  <p class="text-muted mb-0">Please add a brief description of yourself</p>
+                  {%else%}
+                  <p class="text-muted mb-0">{{profile.description}}</p>
+                  {%endif%}
                 </div>
               </div>
             </div>
