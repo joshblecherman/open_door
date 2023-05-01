@@ -72,9 +72,9 @@
         </div>
       </div>
       <form action="#" method="post">
-        <input type="submit" class="btn btn-primary purple-button" value="RSVP" action="#" name="rsvp" />
-        <input type="submit" class="btn btn-primary purple-button" value="See RSVP List" action="#"
-          name="see_rsvp_list" />
+        <input type="hidden" class="btn btn-primary purple-button" value={{event.activity_id}} action="#" name="rsvp" />
+        <button type="submit" action="#" class="btn btn-primary purple-button">RSVP and see attendee list</button>
+
       </form>
     </div>
   </div>
